@@ -69,3 +69,12 @@ body[data-level="0"] #scene:is([data-mode="style"],[data-mode="color"]){gap:12px
 }
 
 @media(min-width:761px){#scene:is([data-mode="style"],[data-mode="color"]) .tag{width:calc(var(--span,1)*100% + (var(--span,1) - 1)*1px)}}
+
+/* Compact overview labels reserve the viewport for larger dial images. */
+@media(min-width:761px){
+body[data-level="0"] #scene:is([data-mode="style"],[data-mode="color"]) .watch{grid-template-rows:13px minmax(0,1fr) 18px;gap:0}
+body[data-level="0"] #scene[data-mode="color"] .watch{grid-template-rows:11px minmax(0,1fr) 18px}
+body[data-level="0"] #scene[data-mode="color"] .tag{font-size:9px;line-height:10px}
+body[data-level="0"] #scene[data-mode="color"] .display-row:has(.row-title){padding-top:11px}
+body[data-level="0"] #scene:is([data-mode="style"],[data-mode="color"]) .label{line-height:9px}
+}

@@ -6,6 +6,10 @@ Object.values(W).forEach(w=>w.brand=aliases.find(([,xs])=>xs.some(x=>w.name.star
 const shortBrands={'폴 쥬른':'FPJ','드 베튠':'DB','리차드 밀':'RM','랑앤하이네':'L&H','로랑 페리에':'LF','파텍 필립':'PP','바쉐론 콘스탄틴':'VC','오데마 피게':'AP','랑에 운트 죄네':'ALS','브레게':'Breguet','예거 르쿨트르':'JLC','블랑팡':'BP','쇼파드':'Chopard','피아제':'Piaget','불가리':'Bvlgari','자케 드로':'JD','위블로':'Hublot','IWC':'IWC','제니스':'Zenith','롤렉스':'Rolex','까르띠에':'Cartier','오메가':'Omega','브라이틀링':'Breitling','파네라이':'Panerai','그랜드 세이코':'GS','세이코':'Seiko','태그호이어':'TAG','론진':'Longines','크로노스위스':'CS','레이몬드 웨일':'RW','노모스':'Nomos','해밀턴':'Hamilton'};
 Object.assign(shortBrands,{'브레게':'BRG','쇼파드':'CHP','피아제':'PIA','불가리':'BVL','위블로':'HUB','제니스':'ZEN','롤렉스':'RLX','까르띠에':'CRT','오메가':'OMG','브라이틀링':'BRT','파네라이':'PAN','세이코':'SKO','론진':'LGS','노모스':'NOM','해밀턴':'HMT'});
 function modelName(name){const match=aliases.flatMap(([brand,prefixes])=>[brand,...prefixes]).sort((a,b)=>b.length-a.length).find(prefix=>name.startsWith(prefix));return match?name.slice(match.length).trim().replace(/^X 부틸라이넨 /,'× 부틸라이넨 '):name;}
+const compactModels={97:'레전드 다이버',75:'RO 점보',19:'씨마스터 300',100:'노틸러스',94:'옥토 피니시모',10:'헥터 살몬',50:'발롱 블루',66:'SLGH 017',96:'SBGP 001',3:'포르투기저',113:'네비타이머',15:'노틸러스',25:'골든일립스',80:'마린 알람',79:'마린 크로노',2:'데이데이트',99:'데이데이트',85:'GMT2 펩시',55:'db25',73:'퍼페추얼 캘린더',81:'월드 타임',60:'메티에다르',117:'삭소니아 씬',90:'클래식 투르비옹',106:'칼라트라바',4:'클래식 7147',62:'파일럿 타입 20',56:'히스토릭 트리플 캘린더',110:'퍼페추얼 크로노',24:'똑뛰 모노푸셔 크로노',74:'크로노스코프',22:'SSB 479',57:'kind of magic',64:'메티에다르 스켈레톤',65:'줄스오데마 미닛리피터',95:'RO 오픈워크',17:'RO 퍼페추얼 캘린더',48:'듀오미터 퀀텀루나'};
+W[17].name=W[17].name.replace('로얄오크','RO');
+const styleCodes={'MINIMAL':'MI','CLASSIC':'CL','COLORFUL':'CO','MILITARY (+MEAN)':'ML','MASCULINE BRACELET':'MB','ELEGANT MASCULINE BRACELET':'EM','ELEGANT BRACELET':'EB','MASCULINE':'MA','ELEGANT MASCULINE GOLD BRACELET':'EG','ELEGANT GOLD BRACELET':'GB','FANCY':'FA','ARTISTIC BEAUTY':'AB','NOBLE CLASSIC':'NC','CLASSIC CALENDAR':'CC','SYMMETRY COMPLICATION':'SC','ASYMMETRY COMPLICATION':'AC','VINTAGE COMPLICATION':'VC','NEO VINTAGE COMPLICATION':'NV','MECHANICAL BEAUTY':'MC'};
+function displayModel(w){return compactModels[w.id]||modelName(w.name)}
 let ignoreClickUntil=0,dragStart=null;
 $('#viewport').addEventListener('pointerdown',e=>{if(level===0||e.button!==0||e.target.closest('a,#flip-watch'))return;dragStart={x:e.clientX,y:e.clientY,id:e.pointerId};});
 $('#viewport').addEventListener('pointermove',e=>{if(dragStart&&Math.abs(e.clientX-dragStart.x)>12&&Math.abs(e.clientX-dragStart.x)>Math.abs(e.clientY-dragStart.y))$('#viewport').setPointerCapture(e.pointerId);});
@@ -38,7 +42,7 @@ function card(id,first=false,span=1){
  const imageSource=photo?photo.path+'?v='+photo.version:w.image;
  const artType=level>0?'full-photo':'dial-photo';
  const art=photo?.viewBox?`<svg class="watch-art ${artType}" role="img" aria-label="${esc(w.name)} · ${level>0?'전체':'다이얼'} 사진${level===3&&flipped.has(id)?' · 반대면':''}" viewBox="${photo.viewBox.join(' ')}"><image onload="this.parentElement.dataset.loaded='true'" onerror="this.parentElement.dataset.loaded='error'" href="${esc(imageSource)}" width="${photo.dimensions[0]}" height="${photo.dimensions[1]}"/></svg>`:`<img class="${artType}" src="${esc(imageSource)}" alt="${esc(w.name)} · ${level>0?'전체':'다이얼'} 사진" draggable="false">`;
- return `<button class="watch ${selected===id?'selected ':''}${w.minimum?'minimum ':''}${w.limited?'limited ':''}${mode==='brand'?'':'style-'+w.styleColor}" data-id="${id}" aria-label="${esc(w.name)}" aria-pressed="${selected===id}"><span class="tag" style="--span:${span}">${first?esc(tag):''}</span>${art}<span class="label">${esc(level===3?w.name:level>0?(shortBrands[w.brand]||w.brand)+' '+modelName(w.name):modelName(w.name))}</span></button>`;
+ return `<button class="watch ${selected===id?'selected ':''}${w.minimum?'minimum ':''}${w.limited?'limited ':''}${mode==='brand'?'':'style-'+w.styleColor}" data-id="${id}" aria-label="${esc(w.name)}" aria-pressed="${selected===id}"><span class="tag" style="--span:${span}">${first?esc(mode==='color'&&level===0?styleCodes[tag]:tag):''}</span>${art}<span class="label">${esc(level===3?w.name:level>0?(shortBrands[w.brand]||w.brand)+' '+displayModel(w):displayModel(w))}</span></button>`;
 }
 function slots(ids,color=false){
  let html='',prev='',marked=false,columns=[];
@@ -68,6 +72,24 @@ function benefitsFromTwoRows(ids){
 function isOn(key){return $('#'+key).getAttribute('aria-pressed')==='true';}
 function fitWatchLengths(){
  const arts=[...document.querySelectorAll('#scene .watch-art')];if(!arts.length)return;
+ if(level===0&&mode!=='brand'&&!matchMedia('(max-width:760px)').matches){
+  const groups=[...document.querySelectorAll('#scene .slots')];
+  const viewport=$('#viewport'),vcss=getComputedStyle(viewport);
+  const available=viewport.clientWidth-parseFloat(vcss.paddingLeft)-parseFloat(vcss.paddingRight);
+  const measures=groups.map(slots=>{
+   const items=[...slots.querySelectorAll('.watch-art')],gap=parseFloat(getComputedStyle(slots).columnGap)||0;
+   const ratios=items.map(art=>art.viewBox.baseVal.width/art.viewBox.baseVal.height);
+   const divider=slots.querySelector('.standard')?10:0;
+   const heights=items.map(art=>parseFloat(getComputedStyle(art.closest('.watch')).gridTemplateRows.split(' ')[1]));
+   return {slots,items,ratios,divider,gap,limit:Math.min(...heights,(available-divider-gap*(items.length+(divider?1:0)-1))/ratios.reduce((a,b)=>a+b,0))};
+  });
+  const height=Math.max(0,Math.min(...measures.map(g=>g.limit)));
+  for(const g of measures){
+   g.slots.style.width='max-content';g.slots.style.gridTemplateColumns=[...g.slots.children].map(el=>el.classList.contains('standard')?'10px':height*(el.querySelector('.watch-art').viewBox.baseVal.width/el.querySelector('.watch-art').viewBox.baseVal.height)+'px').join(' ');
+   g.items.forEach((art,i)=>{art.style.width=height*g.ratios[i]+'px';art.style.height=height+'px';});
+  }
+  return;
+ }
  const frames=arts.map(art=>{
   const watch=art.closest('.watch'),css=getComputedStyle(watch),box=art.viewBox.baseVal;
   const width=watch.getBoundingClientRect().width-parseFloat(css.borderLeftWidth)-parseFloat(css.borderRightWidth)-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight);
