@@ -42,9 +42,10 @@ function card(id,first=false,span=1){
  if(level===1&&dial?.subjectBounds){const [x,y,right,bottom]=dial.subjectBounds,margin=(bottom-y)*.025;dial={...dial,viewBox:[x-margin,y-margin,right-x+margin*2,bottom-y+margin*2]};}
  const photo=level>1?(level===4&&flipped.has(id)&&full?.opposite?full.opposite:full):dial;
  const tag=mode==='brand'?w.brand:w.style;
- const imageSource=photo?photo.path+'?v='+photo.version:w.image;
+ const imagePath=photo?(level===0?photo.previewPath:level===1||level===4?photo.detailPath:photo.previewPath)||photo.path:w.image;
+ const imageSource=photo?imagePath+'?v='+photo.version:imagePath;
  const artType=level>1?'full-photo':'dial-photo';
- const art=photo?.viewBox?`<svg class="watch-art ${artType}" role="img" aria-label="${esc(w.name)} · ${level>1?'전체':'다이얼'} 사진${level===4&&flipped.has(id)?' · 반대면':''}" viewBox="${photo.viewBox.join(' ')}"><image onload="this.parentElement.dataset.loaded='true'" onerror="this.parentElement.dataset.loaded='error'" href="${esc(imageSource)}" width="${photo.dimensions[0]}" height="${photo.dimensions[1]}"/></svg>`:`<img class="${artType}" src="${esc(imageSource)}" alt="${esc(w.name)} · ${level>1?'전체':'다이얼'} 사진" draggable="false">`;
+ const art=photo?.viewBox?`<svg class="watch-art ${artType}" role="img" aria-label="${esc(w.name)} · ${level>1?'전체':'다이얼'} 사진${level===4&&flipped.has(id)?' · 반대면':''}" viewBox="${photo.viewBox.join(' ')}"><image onload="this.parentElement.dataset.loaded='true'" onerror="this.parentElement.dataset.loaded='error'" data-src="${esc(imageSource)}" width="${photo.dimensions[0]}" height="${photo.dimensions[1]}"/></svg>`:`<img class="${artType}" src="${esc(imageSource)}" alt="${esc(w.name)} · ${level>1?'전체':'다이얼'} 사진" draggable="false">`;
  return `<button class="watch ${selected===id?'selected ':''}${w.minimum?'minimum ':''}${w.limited?'limited ':''}${mode==='brand'?'':'style-'+w.styleColor}" data-id="${id}" aria-label="${esc(w.name)}" aria-pressed="${selected===id}"><span class="tag" style="--span:${span}">${first?esc(mode==='color'&&level<=1?styleCodes[tag]:tag):''}</span>${art}<span class="label">${esc(level===4?w.name:level>1?(shortBrands[w.brand]||w.brand)+' '+displayModel(w):displayModel(w))}</span></button>`;
 }
 function slots(ids,color=false){
@@ -104,7 +105,11 @@ function fitWatchLengths(){
  const height=Math.max(0,Math.min(...frames.map(f=>f.height)));
  frames.forEach(f=>{f.art.style.width=`${height*f.ratio}px`;f.art.style.height=`${height}px`;});
 }
-new ResizeObserver(fitWatchLengths).observe($('#viewport'));
+const imageObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{
+ for(const entry of entries)if(entry.isIntersecting){const image=entry.target.querySelector('image[data-src]');if(image){image.setAttribute('href',image.dataset.src);image.removeAttribute('data-src');}imageObserver.unobserve(entry.target);}
+},{rootMargin:'180px 0px'}):null;
+function loadVisibleImages(){document.querySelectorAll('#scene .watch-art').forEach(art=>{if(imageObserver)imageObserver.observe(art);else{const image=art.querySelector('image[data-src]');if(image){image.setAttribute('href',image.dataset.src);image.removeAttribute('data-src');}}});}
+if(typeof ResizeObserver==='function')new ResizeObserver(fitWatchLengths).observe($('#viewport'));else window.addEventListener('resize',fitWatchLengths);
 function render(){
  prepare();const ids=allIds();if(!ids.includes(selected))selected=ids[0];const total=pageCount();index=Math.max(0,Math.min(index,total-1));
  $('#count').textContent=ids.length;let html='';
@@ -114,7 +119,7 @@ function render(){
  else if(level===2)html=displayRow(rows[index],index,true);
  else if(level===3){const g=mode==='color'?rows[index]:focusGroups[index];if(unifiedFocus())html=displayRow(g,index,true);else html=`<div class="focus"><h2 class="${mode==='style'?W[g.ids[0]].styleColor:''}">${esc(g.label)}</h2>${tierSlots(g.ids,false,benefitsFromTwoRows(g.ids))}</div>`}
  else{selected=ids[index];const w=W[selected],photo=(window.FULL_PHOTOS||{})[selected],source=flipped.has(selected)?photo?.opposite?.sourceUrl:photo?.sourceUrl;html=`<div class="focus solo${photo?.opposite?' reversible':''}"><h2>${esc(w.name)}</h2>${slots([selected])}<div class="watch-details">${photo?.opposite?`<button id="flip-watch" aria-pressed="${flipped.has(selected)}">↻ 뒤집기 · ${flipped.has(selected)?'원래 면 보기':'반대면 보기'}</button>`:''}${source?`<a class="photo-source" href="${esc(source)}" target="_blank" rel="noopener noreferrer">사진 출처 ↗</a>`:''}</div></div>`}
- $('#scene').dataset.mode=mode;document.body.dataset.level=level;$('#scene').style.setProperty('--rows',level===1?Math.min(largePageSize(),rows.length-index*largePageSize()):rows.length);$('#scene').style.setProperty('--max-columns',Math.max(...rows.map(g=>g.ids.length)));$('#prev').hidden=$('#next').hidden=level===0;$('#position').hidden=level===0;$('#scene').innerHTML=html;$('#viewport').scrollTop=0;if(matchMedia('(max-width:760px)').matches)window.scrollTo(0,0);fitWatchLengths();
+ $('#scene').dataset.mode=mode;document.body.dataset.level=level;$('#scene').style.setProperty('--rows',level===1?Math.min(largePageSize(),rows.length-index*largePageSize()):rows.length);$('#scene').style.setProperty('--max-columns',Math.max(...rows.map(g=>g.ids.length)));$('#prev').hidden=$('#next').hidden=level===0;$('#position').hidden=level===0;imageObserver?.disconnect();$('#scene').innerHTML=html;loadVisibleImages();$('#viewport').scrollTop=0;if(matchMedia('(max-width:760px)').matches)window.scrollTo(0,0);fitWatchLengths();
  if($('#flip-watch'))$('#flip-watch').onclick=()=>{if(flipped.has(selected))flipped.delete(selected);else flipped.add(selected);render();$('#scene .watch-art')?.classList.add('flip-reveal');};
  $('#position').textContent=`${total?index+1:0} / ${total}`;$('#prev').disabled=index<=0||!ids.length;$('#next').disabled=index>=total-1||!ids.length;
  $('#minus').disabled=level===0;$('#plus').disabled=level===4;
