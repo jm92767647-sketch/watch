@@ -19,7 +19,8 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 function accepted(id){return (isOn('minimum')&&W[id].minimum)||(isOn('limited')&&W[id].limited)||(!isOn('minimum')&&!isOn('limited'))}
 function filtered(){return isOn('minimum')||isOn('limited')}
 function allIds(){return [...new Set(rows.flatMap(g=>g.ids))]}
-function pageCount(){return level===0?1:level===1?rows.length:level===2?(mode==='color'?rows.length:focusGroups.length):allIds().length}
+function largePageSize(){return Math.max(1,Math.ceil(rows.length/2))}
+function pageCount(){return level===0?1:level===1?Math.ceil(rows.length/largePageSize()):level===2?rows.length:level===3?(mode==='color'?rows.length:focusGroups.length):allIds().length}
 function prepare(){
  rows=[];focusGroups=[];
  if(filtered()){
@@ -37,12 +38,14 @@ function prepare(){
 }
 function card(id,first=false,span=1){
  const w=W[id],full=(window.FULL_PHOTOS||{})[id];
- const photo=level>0?(level===3&&flipped.has(id)&&full?.opposite?full.opposite:full):w.dialArt;
+ let dial=w.dialArt;
+ if(level===1&&dial?.subjectBounds){const [x,y,right,bottom]=dial.subjectBounds,margin=(bottom-y)*.025;dial={...dial,viewBox:[x-margin,y-margin,right-x+margin*2,bottom-y+margin*2]};}
+ const photo=level>1?(level===4&&flipped.has(id)&&full?.opposite?full.opposite:full):dial;
  const tag=mode==='brand'?w.brand:w.style;
  const imageSource=photo?photo.path+'?v='+photo.version:w.image;
- const artType=level>0?'full-photo':'dial-photo';
- const art=photo?.viewBox?`<svg class="watch-art ${artType}" role="img" aria-label="${esc(w.name)} · ${level>0?'전체':'다이얼'} 사진${level===3&&flipped.has(id)?' · 반대면':''}" viewBox="${photo.viewBox.join(' ')}"><image onload="this.parentElement.dataset.loaded='true'" onerror="this.parentElement.dataset.loaded='error'" href="${esc(imageSource)}" width="${photo.dimensions[0]}" height="${photo.dimensions[1]}"/></svg>`:`<img class="${artType}" src="${esc(imageSource)}" alt="${esc(w.name)} · ${level>0?'전체':'다이얼'} 사진" draggable="false">`;
- return `<button class="watch ${selected===id?'selected ':''}${w.minimum?'minimum ':''}${w.limited?'limited ':''}${mode==='brand'?'':'style-'+w.styleColor}" data-id="${id}" aria-label="${esc(w.name)}" aria-pressed="${selected===id}"><span class="tag" style="--span:${span}">${first?esc(mode==='color'&&level===0?styleCodes[tag]:tag):''}</span>${art}<span class="label">${esc(level===3?w.name:level>0?(shortBrands[w.brand]||w.brand)+' '+displayModel(w):displayModel(w))}</span></button>`;
+ const artType=level>1?'full-photo':'dial-photo';
+ const art=photo?.viewBox?`<svg class="watch-art ${artType}" role="img" aria-label="${esc(w.name)} · ${level>1?'전체':'다이얼'} 사진${level===4&&flipped.has(id)?' · 반대면':''}" viewBox="${photo.viewBox.join(' ')}"><image onload="this.parentElement.dataset.loaded='true'" onerror="this.parentElement.dataset.loaded='error'" href="${esc(imageSource)}" width="${photo.dimensions[0]}" height="${photo.dimensions[1]}"/></svg>`:`<img class="${artType}" src="${esc(imageSource)}" alt="${esc(w.name)} · ${level>1?'전체':'다이얼'} 사진" draggable="false">`;
+ return `<button class="watch ${selected===id?'selected ':''}${w.minimum?'minimum ':''}${w.limited?'limited ':''}${mode==='brand'?'':'style-'+w.styleColor}" data-id="${id}" aria-label="${esc(w.name)}" aria-pressed="${selected===id}"><span class="tag" style="--span:${span}">${first?esc(mode==='color'&&level<=1?styleCodes[tag]:tag):''}</span>${art}<span class="label">${esc(level===4?w.name:level>1?(shortBrands[w.brand]||w.brand)+' '+displayModel(w):displayModel(w))}</span></button>`;
 }
 function slots(ids,color=false){
  let html='',prev='',marked=false,columns=[];
@@ -72,7 +75,8 @@ function benefitsFromTwoRows(ids){
 function isOn(key){return $('#'+key).getAttribute('aria-pressed')==='true';}
 function fitWatchLengths(){
  const arts=[...document.querySelectorAll('#scene .watch-art')];if(!arts.length)return;
- if(level===0&&!matchMedia('(max-width:760px)').matches){
+ if(matchMedia('(max-width:760px)').matches)document.querySelectorAll('#scene .slots').forEach(slots=>slots.style.width='');
+ if(level<=1&&!matchMedia('(max-width:760px)').matches){
   const groups=[...document.querySelectorAll('#scene .slots')];
   const viewport=$('#viewport'),vcss=getComputedStyle(viewport);
   const available=viewport.clientWidth-parseFloat(vcss.paddingLeft)-parseFloat(vcss.paddingRight);
@@ -106,20 +110,21 @@ function render(){
  $('#count').textContent=ids.length;let html='';
  if(!ids.length)html='<p class="empty">표시할 시계가 없습니다.</p>';
  else if(level===0)html=rows.map((g,i)=>displayRow(g,i)).join('');
- else if(level===1)html=displayRow(rows[index],index,true);
- else if(level===2){const g=mode==='color'?rows[index]:focusGroups[index];if(unifiedFocus())html=displayRow(g,index,true);else html=`<div class="focus"><h2 class="${mode==='style'?W[g.ids[0]].styleColor:''}">${esc(g.label)}</h2>${tierSlots(g.ids,false,benefitsFromTwoRows(g.ids))}</div>`}
+ else if(level===1)html=rows.slice(index*largePageSize(),(index+1)*largePageSize()).map((g,i)=>displayRow(g,i)).join('');
+ else if(level===2)html=displayRow(rows[index],index,true);
+ else if(level===3){const g=mode==='color'?rows[index]:focusGroups[index];if(unifiedFocus())html=displayRow(g,index,true);else html=`<div class="focus"><h2 class="${mode==='style'?W[g.ids[0]].styleColor:''}">${esc(g.label)}</h2>${tierSlots(g.ids,false,benefitsFromTwoRows(g.ids))}</div>`}
  else{selected=ids[index];const w=W[selected],photo=(window.FULL_PHOTOS||{})[selected],source=flipped.has(selected)?photo?.opposite?.sourceUrl:photo?.sourceUrl;html=`<div class="focus solo${photo?.opposite?' reversible':''}"><h2>${esc(w.name)}</h2>${slots([selected])}<div class="watch-details">${photo?.opposite?`<button id="flip-watch" aria-pressed="${flipped.has(selected)}">↻ 뒤집기 · ${flipped.has(selected)?'원래 면 보기':'반대면 보기'}</button>`:''}${source?`<a class="photo-source" href="${esc(source)}" target="_blank" rel="noopener noreferrer">사진 출처 ↗</a>`:''}</div></div>`}
- $('#scene').dataset.mode=mode;document.body.dataset.level=level;$('#scene').style.setProperty('--rows',rows.length);$('#scene').style.setProperty('--max-columns',Math.max(...rows.map(g=>g.ids.length)));$('#prev').hidden=$('#next').hidden=level===0;$('#position').hidden=level===0;$('#scene').innerHTML=html;$('#viewport').scrollTop=0;if(matchMedia('(max-width:760px)').matches)window.scrollTo(0,0);fitWatchLengths();
+ $('#scene').dataset.mode=mode;document.body.dataset.level=level;$('#scene').style.setProperty('--rows',level===1?Math.min(largePageSize(),rows.length-index*largePageSize()):rows.length);$('#scene').style.setProperty('--max-columns',Math.max(...rows.map(g=>g.ids.length)));$('#prev').hidden=$('#next').hidden=level===0;$('#position').hidden=level===0;$('#scene').innerHTML=html;$('#viewport').scrollTop=0;if(matchMedia('(max-width:760px)').matches)window.scrollTo(0,0);fitWatchLengths();
  if($('#flip-watch'))$('#flip-watch').onclick=()=>{if(flipped.has(selected))flipped.delete(selected);else flipped.add(selected);render();$('#scene .watch-art')?.classList.add('flip-reveal');};
  $('#position').textContent=`${total?index+1:0} / ${total}`;$('#prev').disabled=index<=0||!ids.length;$('#next').disabled=index>=total-1||!ids.length;
- $('#minus').disabled=level===0;$('#plus').disabled=level===3;
+ $('#minus').disabled=level===0;$('#plus').disabled=level===4;
  document.querySelectorAll('#levels [data-level]').forEach(b=>b.setAttribute('aria-pressed',Number(b.dataset.level)===level));
- $('#levels [data-level="2"]').textContent=mode==='brand'&&!filtered()?'한 브랜드':'한 분류';
+ $('#levels [data-level="3"]').textContent=mode==='brand'&&!filtered()?'한 브랜드':'한 분류';
  document.querySelectorAll('nav [data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===mode));
 }
-function zoom(n){n=Math.max(0,Math.min(3,n));if(n===level)return;prepare();const ids=allIds(),row=Math.max(0,rows.findIndex(g=>g.ids.includes(selected)));index=n===3?Math.max(0,ids.indexOf(selected)):n===2?Math.max(0,(mode==='color'?rows:focusGroups).findIndex(g=>g.ids.includes(selected))):n===1?row:0;level=n;render()}
-document.querySelectorAll('nav [data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;index=0;$('#viewport').scrollTop=0;render()});document.querySelectorAll('#levels [data-level]').forEach(b=>b.onclick=()=>zoom(Number(b.dataset.level)));$('#plus').onclick=()=>zoom(level+1);$('#minus').onclick=()=>zoom(level-1);['minimum','limited'].forEach(k=>$('#'+k).onclick=()=>{$('#'+k).setAttribute('aria-pressed',!isOn(k));index=0;render()});$('#scene').onclick=e=>{if(Date.now()<ignoreClickUntil)return;const c=e.target.closest('[data-id]');if(!c)return;selected=Number(c.dataset.id);document.querySelectorAll('.watch').forEach(b=>{b.classList.toggle('selected',Number(b.dataset.id)===selected);b.setAttribute('aria-pressed',Number(b.dataset.id)===selected)})};$('#scene').ondblclick=e=>{if(e.target.closest('[data-id]'))zoom(3)};
-function page(delta){prepare();const ids=allIds(),total=pageCount();index=Math.max(0,Math.min(total-1,index+delta));selected=level===0?rows[0]?.ids[0]:level===1?rows[index]?.ids[0]:level===2?(mode==='color'?rows:focusGroups)[index]?.ids[0]:ids[index];render()}
+function zoom(n){n=Math.max(0,Math.min(4,n));if(n===level)return;prepare();const ids=allIds(),row=Math.max(0,rows.findIndex(g=>g.ids.includes(selected)));index=n===4?Math.max(0,ids.indexOf(selected)):n===3?Math.max(0,(mode==='color'?rows:focusGroups).findIndex(g=>g.ids.includes(selected))):n===2?row:n===1?Math.floor(row/largePageSize()):0;level=n;render()}
+document.querySelectorAll('nav [data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;index=0;$('#viewport').scrollTop=0;render()});document.querySelectorAll('#levels [data-level]').forEach(b=>b.onclick=()=>zoom(Number(b.dataset.level)));$('#plus').onclick=()=>zoom(level+1);$('#minus').onclick=()=>zoom(level-1);['minimum','limited'].forEach(k=>$('#'+k).onclick=()=>{$('#'+k).setAttribute('aria-pressed',!isOn(k));index=0;render()});$('#scene').onclick=e=>{if(Date.now()<ignoreClickUntil)return;const c=e.target.closest('[data-id]');if(!c)return;selected=Number(c.dataset.id);document.querySelectorAll('.watch').forEach(b=>{b.classList.toggle('selected',Number(b.dataset.id)===selected);b.setAttribute('aria-pressed',Number(b.dataset.id)===selected)})};$('#scene').ondblclick=e=>{if(e.target.closest('[data-id]'))zoom(4)};
+function page(delta){prepare();const ids=allIds(),total=pageCount();index=Math.max(0,Math.min(total-1,index+delta));selected=level===0?rows[0]?.ids[0]:level===1?rows[index*largePageSize()]?.ids[0]:level===2?rows[index]?.ids[0]:level===3?(mode==='color'?rows:focusGroups)[index]?.ids[0]:ids[index];render()}
 $('#prev').onclick=()=>page(-1);$('#next').onclick=()=>page(1);let lastWheel=0;$('#viewport').addEventListener('wheel',e=>{if(e.ctrlKey||e.shiftKey)return;if(matchMedia('(max-width:760px)').matches&&$('#viewport').scrollHeight>$('#viewport').clientHeight)return;e.preventDefault();if(Date.now()-lastWheel<280)return;lastWheel=Date.now();zoom(level+(e.deltaY<0?1:-1))},{passive:false});$('#viewport').onkeydown=e=>{if(e.key==='+'||e.key==='='){zoom(level+1);e.preventDefault()}if(e.key==='-'){zoom(level-1);e.preventDefault()}if(e.key==='ArrowRight')page(1);if(e.key==='ArrowLeft')page(-1)};
 for(const key of ['major','independent'])$('#'+key).innerHTML=D[key].map((s,i)=>`<div class="rank-item"><strong>${String(i+1).padStart(2,'0')}</strong><p>${esc(s.replace(/^\d+\.\s*/,''))}</p></div>`).join('');$('#rank').onclick=()=>{$('#rank-dialog').showModal();$('#rank').setAttribute('aria-pressed','true');};$('#rank-dialog').addEventListener('close',()=>$('#rank').setAttribute('aria-pressed','false'));$('#close-rank').onclick=()=>$('#rank-dialog').close();$('#rank-dialog').onclick=e=>{if(e.target===e.currentTarget){const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.currentTarget.close()}};render();
 

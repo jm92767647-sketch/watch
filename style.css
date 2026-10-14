@@ -1,7 +1,7 @@
 :root{font-family:'Malgun Gothic',Arial,sans-serif;color:#f3f8ff;background:#071322;--line:#ffffff20;--view:calc(100dvh - 88px)}
 *{box-sizing:border-box}body{margin:0}button,input{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none;padding:5px 8px}button:disabled{opacity:.2;cursor:default}[hidden]{display:none!important}button:focus-visible,input:focus-visible,#viewport:focus-visible{outline:1px solid #c5e5ff;outline-offset:2px}
 header{height:44px;padding:5px 18px;display:flex;align-items:center;gap:16px;position:relative;z-index:2;text-shadow:0 1px 8px #0009}h1{font-size:19px;font-weight:600;margin:0;margin-right:8px}h1 span{font-size:10px;font-weight:400;opacity:.6;margin-left:4px}nav,.filters{display:flex;align-items:center;gap:10px}header button,.filters{font-size:11px;white-space:nowrap}nav button[aria-pressed=true],#levels button[aria-pressed=true]{border-bottom:1px solid currentColor}.filters{margin-left:4px}.filters label{cursor:pointer}.green{color:#82d99d;font-weight:700}.yellow{color:#f4d66d;font-weight:700}input{accent-color:#92c5a2;vertical-align:middle;margin:0 4px 0 0}
-main{width:100%;position:relative}#viewport{height:var(--view);padding:4px 14px;overflow:auto;overflow-x:hidden;touch-action:pan-y;scrollbar-width:thin;scrollbar-color:#ffffff30 transparent}#scene{height:100%}body[data-level="0"] #scene{display:grid;grid-template-rows:repeat(var(--rows),minmax(0,1fr));gap:6px}
+main{width:100%;position:relative}#viewport{height:var(--view);padding:4px 14px;overflow:auto;overflow-x:hidden;touch-action:pan-y;scrollbar-width:thin;scrollbar-color:#ffffff30 transparent}#scene{height:100%}body:is([data-level="0"],[data-level="1"]) #scene{display:grid;grid-template-rows:repeat(var(--rows),minmax(0,1fr));gap:6px}
 .display-row{display:grid;grid-template-rows:minmax(0,1fr);min-height:0;position:relative}.row-title{font-size:9px;color:#d6e0ec;position:absolute;top:0;left:0;opacity:.7}.display-row:has(.row-title){padding-top:13px}.slots{display:grid;gap:5px;min-height:0;width:100%;justify-self:center;align-self:stretch}.display-row:not(.single-row) .slots{width:calc(var(--row-count)/var(--max-columns)*100%)}
 .watch{display:grid;grid-template-rows:17px minmax(0,1fr) 26px;gap:2px;padding:0 2px;min-height:0;min-width:0;position:relative;text-align:center;border-radius:0;user-select:none;-webkit-user-select:none}.watch .tag{font-size:10px;line-height:12px;font-weight:700;text-align:left;align-self:start;width:calc(var(--span,1)*100% + (var(--span,1) - 1)*5px);z-index:1;position:relative;pointer-events:none;overflow-wrap:anywhere}.watch .label{font-size:8px;line-height:11px;display:flex;justify-content:center;align-items:start;overflow-wrap:anywhere;overflow:hidden;text-shadow:0 1px 6px #000;min-width:0}.watch.minimum .label{color:#82d99d;font-weight:800}.watch.limited .label{color:#f4d66d;font-weight:800}.watch.minimum .label:before,.watch.limited .label:before{content:'✓';margin-right:2px}.watch.style-purple .tag{color:#d6b6ee}.watch.style-blue .tag{color:#aad0ff}
 .watch-art{display:block;width:100%;height:100%;min-height:0;max-width:100%;max-height:100%;align-self:center;justify-self:center;overflow:hidden;pointer-events:none}.watch img{width:100%;height:100%;object-fit:contain}.standard{writing-mode:vertical-rl;font-size:7px;letter-spacing:1px;color:#c1cddb;display:flex;align-items:center;justify-content:center;border-left:1px solid #ffffff35;border-right:1px solid #ffffff35}
@@ -9,7 +9,7 @@ main{width:100%;position:relative}#viewport{height:var(--view);padding:4px 14px;
 .focus{height:100%;display:grid;grid-template-rows:30px minmax(0,1fr);gap:8px;padding:4px 3% 8px}.focus h2{font-size:16px;line-height:22px;font-weight:700;text-align:center;margin:0}.focus .slots{width:100%;max-width:1400px;gap:16px}.focus .watch{grid-template-rows:25px minmax(0,1fr) 42px}.focus .tag{font-size:14px}.focus .label{font-size:12px;line-height:17px}.solo{grid-template-rows:42px minmax(0,1fr) 32px}.solo .slots{max-width:760px}.solo .watch{grid-template-rows:0 minmax(0,1fr) 0}.solo .tag,.solo .label{display:none}.watch-details{display:flex;align-items:center;justify-content:center;gap:15px;font-size:10px}.watch-details button{font-size:12px}.photo-source{color:#d6e0ec;text-decoration:none}
 footer{height:40px;position:relative;display:flex;align-items:center;justify-content:center}.view-controls,#levels{display:flex;align-items:center;gap:10px}#levels button{font-size:10px;padding:5px 10px}#position{font-size:9px;opacity:.6}#prev,#next{position:fixed;bottom:7px;z-index:5;width:42px;height:30px;font-size:23px;line-height:20px;border-radius:3px;background:#07132255;backdrop-filter:blur(8px)}#prev{left:12px}#next{right:12px}
 dialog{color:#f3f8ff;background:#071322df;backdrop-filter:blur(25px);border:1px solid #ffffff25;border-radius:4px;width:min(1050px,94vw);max-height:90dvh;padding:24px}dialog::backdrop{background:#0007}.dialog-head{display:flex;align-items:center;justify-content:space-between}.dialog-head small,.dialog-head p{font-size:10px;opacity:.6}.dialog-head h2{font-size:22px;margin:8px 0}.rank-panels{display:grid;grid-template-columns:1fr 1fr;gap:28px}.rank-panels h3{font-size:14px}.rank-item{display:grid;grid-template-columns:25px 1fr;gap:8px;border-top:1px solid var(--line);font-size:12px;line-height:1.7;padding:8px 0}.rank-item p{margin:0}.rank-item strong{opacity:.5}.empty{text-align:center;padding:50px}.flip-reveal{animation:flip .25s ease-out}@keyframes flip{from{transform:perspective(800px) rotateY(80deg);opacity:.3}to{transform:none;opacity:1}}
-@media(max-width:760px){:root{--view:calc(100dvh - 94px)}header{height:auto;min-height:48px;flex-wrap:wrap;gap:5px 8px;padding:7px 10px}h1{font-size:17px;margin-right:4px}header button,.filters{font-size:10px}nav,.filters{gap:3px}.filters{margin-left:0}#viewport{height:auto;min-height:var(--view);padding:10px 8px 45px;overflow:visible}#scene{height:auto!important}body[data-level="0"] #scene{display:flex;flex-direction:column;gap:18px}.display-row{height:auto;padding:0}.display-row:has(.row-title){padding-top:18px}.slots,.display-row:not(.single-row) .slots{width:100%;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:9px 5px;grid-auto-rows:155px}.watch{grid-template-rows:22px minmax(0,1fr) 32px;padding:0 1px}.watch .tag{font-size:9px;line-height:11px;width:100%;overflow-wrap:anywhere}.watch .label{font-size:8px;line-height:11px;overflow:visible}.standard{grid-column:1/-1;height:16px;writing-mode:horizontal-tb;grid-row:auto;align-self:center;border:0}.single-row{height:auto;padding:5px 0}.single-row .slots{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:320px;gap:20px 10px}.single-row .watch{grid-template-rows:28px minmax(0,1fr) 42px}.single-row .label{font-size:11px;line-height:15px}.single-row .tag{font-size:13px;line-height:17px}.focus{height:auto;padding:5px 0;grid-template-rows:auto minmax(0,1fr);gap:15px}.focus .slots{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:370px;gap:22px 12px}.focus .watch{grid-template-rows:28px minmax(0,1fr) 42px}.solo{height:var(--view);grid-template-rows:50px minmax(0,1fr) 32px}.solo .slots{display:grid;grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr);grid-auto-rows:auto}.solo .watch{grid-template-rows:0 minmax(0,1fr) 0}.focus h2{font-size:15px;line-height:21px}.solo h2{padding:0 18px}.watch-details{font-size:9px}footer{position:fixed;bottom:0;left:0;right:0;z-index:4;background:#07132280;backdrop-filter:blur(12px);height:39px}#levels{gap:2px}#levels button{padding:5px 7px;font-size:9px}.view-controls{gap:7px}#prev{left:5px}#next{right:5px}.rank-panels{gap:15px}.rank-item{font-size:10px}dialog{padding:16px}}
+@media(max-width:760px){:root{--view:calc(100dvh - 94px)}header{height:auto;min-height:48px;flex-wrap:wrap;gap:5px 8px;padding:7px 10px}h1{font-size:17px;margin-right:4px}header button,.filters{font-size:10px}nav,.filters{gap:3px}.filters{margin-left:0}#viewport{height:auto;min-height:var(--view);padding:10px 8px 45px;overflow:visible}#scene{height:auto!important}body:is([data-level="0"],[data-level="1"]) #scene{display:flex;flex-direction:column;gap:18px}.display-row{height:auto;padding:0}.display-row:has(.row-title){padding-top:18px}.slots,.display-row:not(.single-row) .slots{width:100%;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:9px 5px;grid-auto-rows:155px}.watch{grid-template-rows:22px minmax(0,1fr) 32px;padding:0 1px}.watch .tag{font-size:9px;line-height:11px;width:100%;overflow-wrap:anywhere}.watch .label{font-size:8px;line-height:11px;overflow:visible}.standard{grid-column:1/-1;height:16px;writing-mode:horizontal-tb;grid-row:auto;align-self:center;border:0}.single-row{height:auto;padding:5px 0}.single-row .slots{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:320px;gap:20px 10px}.single-row .watch{grid-template-rows:28px minmax(0,1fr) 42px}.single-row .label{font-size:11px;line-height:15px}.single-row .tag{font-size:13px;line-height:17px}.focus{height:auto;padding:5px 0;grid-template-rows:auto minmax(0,1fr);gap:15px}.focus .slots{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:370px;gap:22px 12px}.focus .watch{grid-template-rows:28px minmax(0,1fr) 42px}.solo{height:var(--view);grid-template-rows:50px minmax(0,1fr) 32px}.solo .slots{display:grid;grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr);grid-auto-rows:auto}.solo .watch{grid-template-rows:0 minmax(0,1fr) 0}.focus h2{font-size:15px;line-height:21px}.solo h2{padding:0 18px}.watch-details{font-size:9px}footer{position:fixed;bottom:0;left:0;right:0;z-index:4;background:#07132280;backdrop-filter:blur(12px);height:39px}#levels{gap:2px}#levels button{padding:5px 7px;font-size:9px}.view-controls{gap:7px}#prev{left:5px}#next{right:5px}.rank-panels{gap:15px}.rank-item{font-size:10px}dialog{padding:16px}}
 @media(prefers-reduced-motion:reduce){.flip-reveal{animation:none}}
 @media(max-width:760px){.slots{display:flex;flex-wrap:wrap;align-content:flex-start}.watch{width:calc((100% - 15px)/4);height:155px}.standard{width:100%;height:16px;flex:0 0 100%;margin:0}.single-row .watch{width:calc((100% - 10px)/2);height:320px}.focus .watch{width:calc((100% - 12px)/2);height:370px}.solo .watch{width:100%;height:100%}}
 
@@ -42,8 +42,8 @@ header{color:#0a0a0a;text-shadow:none}header button,header button:hover,header b
 /* Tighter spacing lets style/color watches use more of each view. */
 #scene:is([data-mode="style"],[data-mode="color"]) .slots{gap:1px}
 #scene:is([data-mode="style"],[data-mode="color"]) .watch{padding-left:0;padding-right:0}
-body[data-level="0"] #scene:is([data-mode="style"],[data-mode="color"]){gap:3px}
-body[data-level="0"] #scene:is([data-mode="style"],[data-mode="color"]) .watch{grid-template-rows:17px minmax(0,1fr) 22px;gap:1px}
+body:is([data-level="0"],[data-level="1"]) #scene:is([data-mode="style"],[data-mode="color"]){gap:3px}
+body:is([data-level="0"],[data-level="1"]) #scene:is([data-mode="style"],[data-mode="color"]) .watch{grid-template-rows:17px minmax(0,1fr) 22px;gap:1px}
 #scene:is([data-mode="style"],[data-mode="color"]) .tiered{gap:6px}
 #scene:is([data-mode="style"],[data-mode="color"]) .single-row .watch,
 #scene:is([data-mode="style"],[data-mode="color"]) .focus:not(.solo) .watch{grid-template-rows:23px minmax(0,1fr) 34px;gap:1px}
@@ -55,33 +55,33 @@ body[data-level="0"] #scene:is([data-mode="style"],[data-mode="color"]) .watch{g
 #scene:is([data-mode="style"],[data-mode="color"]) .focus:not(.solo) .watch{width:calc((100% - 2px)/2)}
 #scene:is([data-mode="style"],[data-mode="color"]) .focus .slots{gap:12px 2px}
 #scene:is([data-mode="style"],[data-mode="color"]) .solo .watch{width:100%}
-body[data-level="0"] #scene:is([data-mode="style"],[data-mode="color"]){gap:12px}
+body:is([data-level="0"],[data-level="1"]) #scene:is([data-mode="style"],[data-mode="color"]){gap:12px}
 }
 
 @media(min-width:761px){#scene:is([data-mode="style"],[data-mode="color"]) .tag{width:calc(var(--span,1)*100% + (var(--span,1) - 1)*1px)}}
 
 /* Compact overview labels reserve the viewport for larger dial images. */
 @media(min-width:761px){
-body[data-level="0"] #scene:is([data-mode="style"],[data-mode="color"]) .watch{grid-template-rows:13px minmax(0,1fr) 18px;gap:0}
-body[data-level="0"] #scene[data-mode="color"] .watch{grid-template-rows:11px minmax(0,1fr) 18px}
-body[data-level="0"] #scene[data-mode="color"] .tag{font-size:9px;line-height:10px}
-body[data-level="0"] #scene[data-mode="color"] .display-row:has(.row-title){padding-top:11px}
-body[data-level="0"] #scene:is([data-mode="style"],[data-mode="color"]) .label{line-height:9px}
+body:is([data-level="0"],[data-level="1"]) #scene:is([data-mode="style"],[data-mode="color"]) .watch{grid-template-rows:13px minmax(0,1fr) 18px;gap:0}
+body:is([data-level="0"],[data-level="1"]) #scene[data-mode="color"] .watch{grid-template-rows:11px minmax(0,1fr) 18px}
+body:is([data-level="0"],[data-level="1"]) #scene[data-mode="color"] .tag{font-size:9px;line-height:10px}
+body:is([data-level="0"],[data-level="1"]) #scene[data-mode="color"] .display-row:has(.row-title){padding-top:11px}
+body:is([data-level="0"],[data-level="1"]) #scene:is([data-mode="style"],[data-mode="color"]) .label{line-height:9px}
 }
 
 /* Pack the brand overview and give the color rows more dial height. */
-body[data-level="0"] #scene .slots{gap:1px}
-body[data-level="0"] #scene .watch{padding-left:0;padding-right:0}
+body:is([data-level="0"],[data-level="1"]) #scene .slots{gap:1px}
+body:is([data-level="0"],[data-level="1"]) #scene .watch{padding-left:0;padding-right:0}
 @media(min-width:761px){
-body[data-level="0"] #scene{gap:1px}
-body[data-level="0"] #scene[data-mode="brand"] .watch{grid-template-rows:14px minmax(0,1fr) 18px;gap:0}
-body[data-level="0"] #scene[data-mode="brand"] .tag{width:calc(var(--span,1)*100% + (var(--span,1) - 1)*1px);line-height:12px}
-body[data-level="0"] #scene[data-mode="brand"] .label{line-height:9px}
-body[data-level="0"] #scene[data-mode="color"] .display-row:has(.row-title){padding-top:6px}
-body[data-level="0"] #scene[data-mode="color"] .watch{grid-template-rows:10px minmax(0,1fr) 16px}
-body[data-level="0"] #scene[data-mode="color"] .row-title{font-size:8px}
+body:is([data-level="0"],[data-level="1"]) #scene{gap:1px}
+body:is([data-level="0"],[data-level="1"]) #scene[data-mode="brand"] .watch{grid-template-rows:14px minmax(0,1fr) 18px;gap:0}
+body:is([data-level="0"],[data-level="1"]) #scene[data-mode="brand"] .tag{width:calc(var(--span,1)*100% + (var(--span,1) - 1)*1px);line-height:12px}
+body:is([data-level="0"],[data-level="1"]) #scene[data-mode="brand"] .label{line-height:9px}
+body:is([data-level="0"],[data-level="1"]) #scene[data-mode="color"] .display-row:has(.row-title){padding-top:6px}
+body:is([data-level="0"],[data-level="1"]) #scene[data-mode="color"] .watch{grid-template-rows:10px minmax(0,1fr) 16px}
+body:is([data-level="0"],[data-level="1"]) #scene[data-mode="color"] .row-title{font-size:8px}
 }
-@media(max-width:760px){body[data-level="0"] #scene[data-mode="brand"] .slots{gap:8px 1px}body[data-level="0"] #scene[data-mode="brand"] .watch{width:calc((100% - 3px)/4)}header h1{font-size:14px;margin-right:0}}
+@media(max-width:760px){body:is([data-level="0"],[data-level="1"]) #scene[data-mode="brand"] .slots{gap:8px 1px}body:is([data-level="0"],[data-level="1"]) #scene[data-mode="brand"] .watch{width:calc((100% - 3px)/4)}header h1{font-size:14px;margin-right:0}}
 
 /* The mypens palette, with independently drifting gradient layers. */
 html,body{background:#fdfdff!important;color:#0a0a0a}
@@ -98,3 +98,11 @@ html,body{background:#fdfdff!important;color:#0a0a0a}
 
 /* Keep the lavender peak visible above the other pastel layers. */
 .color-cloud:nth-child(2){z-index:1;transform:translate(28vw,28dvh);opacity:1}
+
+/* Two overview pages of dial photographs, retaining the original row order. */
+body[data-level="1"] #scene{display:grid;grid-template-rows:repeat(var(--rows),minmax(0,1fr));gap:8px}
+body[data-level="1"] #scene .watch{grid-template-rows:18px minmax(0,1fr) 28px;gap:1px}
+body[data-level="1"] #scene .label{font-size:10px;line-height:13px}
+body[data-level="1"] #scene .tag{font-size:11px;line-height:14px}
+body[data-level="1"] #scene[data-mode="color"] .tag{font-size:10px;line-height:12px}
+@media(max-width:760px){body[data-level="1"] #scene{display:flex;flex-direction:column;gap:18px}body[data-level="1"] #scene .slots{gap:12px 5px}body[data-level="1"] #scene .watch{width:calc((100% - 10px)/3);height:200px}body[data-level="1"] #scene .tag{font-size:10px;line-height:12px;width:100%}body[data-level="1"] #scene .label{font-size:9px;line-height:12px}#levels{gap:0}#levels button{padding:5px 5px}}
