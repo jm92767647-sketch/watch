@@ -30,24 +30,14 @@ header button,header button:hover,header button[aria-pressed=true],header .green
 header button::before,header button::after{display:none}header button:hover{opacity:.75}header button[aria-pressed=true]{opacity:1;font-weight:700}header .green{color:#94dbaa}header .yellow{color:#e8d084}header .green[aria-pressed=true]{color:#b2f5c5;opacity:1}header .yellow[aria-pressed=true]{color:#ffe89e;opacity:1}
 nav button[aria-pressed=true]{border:0}main,footer{position:relative;z-index:1}@media(max-width:760px){footer{position:fixed;z-index:4}}
 
-/* The attached Alwayzz prompt: image, decorative curves and bottom fade only. */
-html,body{background:#fff!important;color:#0a0a0a}
-.site-backdrop{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#fff;isolation:isolate}
-.site-backdrop::before{content:'';position:absolute;inset:0;background:url('background.webp') center/cover no-repeat}
-.site-backdrop::after{content:'';position:absolute;bottom:0;left:0;right:0;height:178px;background:linear-gradient(transparent,rgba(255,255,255,.4) 40%,#fff)}
-.curve-lines{position:absolute;top:0;bottom:0;width:250px;overflow:hidden}
-.left-lines{left:0}.right-lines{right:0}.top-lines{display:none}
-.curve-lines i{position:absolute;top:8%;height:84%;width:calc(60px + var(--i)*10px);border:2.5px solid #fcfaf8;opacity:0;animation:line-pulse 5s ease-in-out infinite;animation-delay:calc(var(--i)*.25s)}
-.left-lines i{left:-2px;border-left:0;border-radius:0 80% 80% 0}.right-lines i{right:-2px;border-right:0;border-radius:80% 0 0 80%}
-@keyframes line-pulse{0%{opacity:0;transform:scale(1)}15%{opacity:.9}70%{opacity:.4}100%{opacity:0;transform:scale(.85)}}
 header{color:#0a0a0a;text-shadow:none}header button,header button:hover,header button[aria-pressed=true]{color:#0a0a0a}
 .watch .label{color:#0a0a0a;text-shadow:none}.row-title,.standard,.photo-source{color:#42515b}
 .watch.minimum .label,header .green,header .green[aria-pressed=true]{color:#167343}.watch.limited .label,header .yellow,header .yellow[aria-pressed=true]{color:#8d6500}
 .watch.style-purple .tag{color:#8152a5}.watch.style-blue .tag{color:#236999}
 #prev,#next{background:#ffffff9c}footer{color:#0a0a0a}
-@media(max-width:810px){.site-backdrop::before{inset:auto;left:50%;top:50%;width:100dvh;height:100vw;transform:translate(-50%,-50%) rotate(90deg)}.left-lines,.right-lines{display:none}.top-lines{display:block;top:0;left:0;right:0;bottom:auto;width:100%;height:250px}.top-lines i{left:8%;top:-2px;width:84%;height:calc(60px + var(--i)*10px);border-top:0;border-radius:0 0 80% 80%}}
+
 @media(max-width:760px){footer{background:#ffffffc4}}
-@media(prefers-reduced-motion:reduce){.curve-lines i{animation:none;opacity:.25}}
+
 
 /* Tighter spacing lets style/color watches use more of each view. */
 #scene:is([data-mode="style"],[data-mode="color"]) .slots{gap:1px}
@@ -92,3 +82,16 @@ body[data-level="0"] #scene[data-mode="color"] .watch{grid-template-rows:10px mi
 body[data-level="0"] #scene[data-mode="color"] .row-title{font-size:8px}
 }
 @media(max-width:760px){body[data-level="0"] #scene[data-mode="brand"] .slots{gap:8px 1px}body[data-level="0"] #scene[data-mode="brand"] .watch{width:calc((100% - 3px)/4)}header h1{font-size:14px;margin-right:0}}
+
+/* The mypens palette, with independently drifting gradient layers. */
+html,body{background:#fdfdff!important;color:#0a0a0a}
+.site-backdrop{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#fdfdff;isolation:isolate}
+.color-cloud{position:absolute;inset:0;display:block;will-change:transform}
+.color-cloud:nth-child(1){background:radial-gradient(ellipse 40% 30% at 50% 50%,#cddff9,transparent);transform:translate(50vw,50dvh)}
+.color-cloud:nth-child(2){background:radial-gradient(ellipse 44% 50% at 50% 50%,#e8e2fc,transparent);transform:translate(40vw,28dvh)}
+.color-cloud:nth-child(3){background:radial-gradient(ellipse 45% 45% at 50% 50%,#cdeae9,transparent);transform:translate(-50vw,50dvh)}
+.color-cloud:nth-child(4){background:radial-gradient(ellipse 33% 48% at 50% 50%,#deebfc,transparent);transform:translate(-50vw,0)}
+.color-cloud:nth-child(5){background:radial-gradient(ellipse 50% 65% at 50% 50%,#cde8ef,transparent);transform:translate(50vw,-50dvh)}
+.color-cloud:nth-child(6){background:radial-gradient(ellipse 32% 30% at 50% 50%,#f6f3fe,transparent);transform:translate(0,-50dvh)}
+.color-cloud:nth-child(7){background:radial-gradient(ellipse 42% 48% at 50% 50%,#d8eeec,transparent);transform:translate(-50vw,-50dvh)}
+@media(prefers-reduced-motion:reduce){.color-cloud{will-change:auto}}
