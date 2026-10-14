@@ -41,3 +41,8 @@ nav button[aria-pressed=true]{border:0}
 .site-backdrop video{opacity:1;filter:hue-rotate(-8deg) saturate(.3) brightness(2.5) contrast(1.15)}
 .background-overlay{background:linear-gradient(180deg,#0003,transparent 30%,transparent 72%,#0003);backdrop-filter:none}
 .sky-glow{opacity:.45;background:#86d9ff26}.bottom-glow{background:#b5eaff26}
+
+/* Reference tint: pale sky blue highlights, preserving the video shadows. */
+.site-backdrop video{filter:grayscale(1) brightness(6) contrast(1.1)}
+.background-overlay{background:#cdeef1;mix-blend-mode:multiply;backdrop-filter:none}
+.sky-glow{opacity:.25;background:#cdeef126}.bottom-glow{background:#bce4ef26}
