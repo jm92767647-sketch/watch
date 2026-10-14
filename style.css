@@ -78,3 +78,17 @@ body[data-level="0"] #scene[data-mode="color"] .tag{font-size:9px;line-height:10
 body[data-level="0"] #scene[data-mode="color"] .display-row:has(.row-title){padding-top:11px}
 body[data-level="0"] #scene:is([data-mode="style"],[data-mode="color"]) .label{line-height:9px}
 }
+
+/* Pack the brand overview and give the color rows more dial height. */
+body[data-level="0"] #scene .slots{gap:1px}
+body[data-level="0"] #scene .watch{padding-left:0;padding-right:0}
+@media(min-width:761px){
+body[data-level="0"] #scene{gap:1px}
+body[data-level="0"] #scene[data-mode="brand"] .watch{grid-template-rows:14px minmax(0,1fr) 18px;gap:0}
+body[data-level="0"] #scene[data-mode="brand"] .tag{width:calc(var(--span,1)*100% + (var(--span,1) - 1)*1px);line-height:12px}
+body[data-level="0"] #scene[data-mode="brand"] .label{line-height:9px}
+body[data-level="0"] #scene[data-mode="color"] .display-row:has(.row-title){padding-top:6px}
+body[data-level="0"] #scene[data-mode="color"] .watch{grid-template-rows:10px minmax(0,1fr) 16px}
+body[data-level="0"] #scene[data-mode="color"] .row-title{font-size:8px}
+}
+@media(max-width:760px){body[data-level="0"] #scene[data-mode="brand"] .slots{gap:8px 1px}body[data-level="0"] #scene[data-mode="brand"] .watch{width:calc((100% - 3px)/4)}header h1{font-size:14px;margin-right:0}}
