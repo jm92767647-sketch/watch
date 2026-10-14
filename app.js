@@ -44,7 +44,7 @@ function slots(ids,color=false){
  let html='',prev='',marked=false,columns=[];
  const divider=color&&!filtered()&&ids.some(id=>W[id].styleColor==='purple')&&ids.some(id=>W[id].styleColor==='blue');
  ids.forEach((id,i)=>{
-  if(divider&&!marked&&W[id].styleColor==='blue'){html+='<div class="standard" aria-label="STANDARD · 왼쪽 보라색 분류, 오른쪽 파란색 분류">STANDARD</div>';columns.push('18px');marked=true}
+  if(divider&&!marked&&W[id].styleColor==='blue'){html+='<div class="standard" aria-label="STANDARD · 왼쪽 보라색 분류, 오른쪽 파란색 분류">STANDARD</div>';columns.push('10px');marked=true}
   const tag=mode==='brand'?W[id].brand:W[id].style;let span=1;
   while(i+span<ids.length&&(mode==='brand'?W[ids[i+span]].brand:W[ids[i+span]].style)===tag)span++;
   html+=card(id,tag!==prev,span);columns.push('minmax(0,1fr)');prev=tag;
