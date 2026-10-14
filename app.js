@@ -58,6 +58,13 @@ function tierSlots(ids,color=false,twoRows=false){
 }
 function displayRow(g,i,single=false){return `<div class="display-row ${single?'single-row':''} ${g.emphasis||''}" style="--row-count:${g.ids.length}">${mode==='color'?`<div class="row-title">${esc(g.label)}</div>`:''}${single?tierSlots(g.ids,mode==='color',true):slots(g.ids,mode==='color')}</div>`}
 function unifiedFocus(){return mode==='color'||(mode==='style'&&focusGroups[index]?.label==='MECHANICAL BEAUTY');}
+function benefitsFromTwoRows(ids){
+ if(ids.length<5||matchMedia('(max-width:760px)').matches)return false;
+ const area=$('#viewport').getBoundingClientRect(),n=ids.length,columns=Math.ceil(n/2),ratio=2/3;
+ const one=Math.min((Math.min(1400,area.width*.94)-16*(n-1))/n/ratio,area.height-120);
+ const two=Math.min((Math.min(1600,area.width*.94)-16*(columns-1))/columns/ratio,(area.height-68)/2-77);
+ return two>one;
+}
 function isOn(key){return $('#'+key).getAttribute('aria-pressed')==='true';}
 function fitWatchLengths(){
  const arts=[...document.querySelectorAll('#scene .watch-art')];if(!arts.length)return;
@@ -78,7 +85,7 @@ function render(){
  if(!ids.length)html='<p class="empty">표시할 시계가 없습니다.</p>';
  else if(level===0)html=rows.map((g,i)=>displayRow(g,i)).join('');
  else if(level===1)html=displayRow(rows[index],index,true);
- else if(level===2){const g=mode==='color'?rows[index]:focusGroups[index];if(unifiedFocus())html=displayRow(g,index,true);else html=`<div class="focus"><h2 class="${mode==='style'?W[g.ids[0]].styleColor:''}">${esc(g.label)}</h2>${tierSlots(g.ids,false,g.ids.length>4)}</div>`}
+ else if(level===2){const g=mode==='color'?rows[index]:focusGroups[index];if(unifiedFocus())html=displayRow(g,index,true);else html=`<div class="focus"><h2 class="${mode==='style'?W[g.ids[0]].styleColor:''}">${esc(g.label)}</h2>${tierSlots(g.ids,false,benefitsFromTwoRows(g.ids))}</div>`}
  else{selected=ids[index];const w=W[selected],photo=(window.FULL_PHOTOS||{})[selected],source=flipped.has(selected)?photo?.opposite?.sourceUrl:photo?.sourceUrl;html=`<div class="focus solo${photo?.opposite?' reversible':''}"><h2>${esc(w.name)}</h2>${slots([selected])}<div class="watch-details">${photo?.opposite?`<button id="flip-watch" aria-pressed="${flipped.has(selected)}">↻ 뒤집기 · ${flipped.has(selected)?'원래 면 보기':'반대면 보기'}</button>`:''}${source?`<a class="photo-source" href="${esc(source)}" target="_blank" rel="noopener noreferrer">사진 출처 ↗</a>`:''}</div></div>`}
  $('#scene').dataset.mode=mode;document.body.dataset.level=level;$('#scene').style.setProperty('--rows',rows.length);$('#scene').style.setProperty('--max-columns',Math.max(...rows.map(g=>g.ids.length)));$('#prev').hidden=$('#next').hidden=level===0;$('#position').hidden=level===0;$('#scene').innerHTML=html;$('#viewport').scrollTop=0;if(matchMedia('(max-width:760px)').matches)window.scrollTo(0,0);fitWatchLengths();
  if($('#flip-watch'))$('#flip-watch').onclick=()=>{if(flipped.has(selected))flipped.delete(selected);else flipped.add(selected);render();$('#scene .watch-art')?.classList.add('flip-reveal');};
