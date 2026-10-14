@@ -32,3 +32,4 @@ header button,header button:hover,header button[aria-pressed=true],header .green
 header button::before,header button::after{display:none}header button:hover{opacity:.75}header button[aria-pressed=true]{opacity:1;font-weight:700}header .green{color:#94dbaa}header .yellow{color:#e8d084}header .green[aria-pressed=true]{color:#b2f5c5;opacity:1}header .yellow[aria-pressed=true]{color:#ffe89e;opacity:1}
 nav button[aria-pressed=true]{border:0}
 .site-backdrop{z-index:0}main,footer{position:relative;z-index:1}@media(max-width:760px){footer{position:fixed;z-index:4}}
+.site-backdrop{isolation:isolate}.background-overlay{backdrop-filter:none}.site-backdrop video{filter:url(#sky-tint) blur(2px)}
