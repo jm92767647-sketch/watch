@@ -5,8 +5,11 @@ const transform=([x,y])=>`translate(${x}vw,${y}dvh)`;
 let animations=[],generation=0;
 function drift(cloud,from,token){
  if(calm.matches||token!==generation)return;
- const to=[Math.random()*100-50,Math.random()*100-50];
- const animation=cloud.animate([{transform:transform(from)},{transform:transform(to)}],{duration:55000+Math.random()*45000,easing:'cubic-bezier(.45,0,.55,1)',fill:'forwards'});
+ let to;
+ do{to=[Math.random()*110-55,Math.random()*110-55];}while(Math.hypot(to[0]-from[0],to[1]-from[1])<45);
+ const dx=to[0]-from[0],dy=to[1]-from[1],length=Math.hypot(dx,dy),bend=(Math.random()<.5?-1:1)*(10+Math.random()*15);
+ const middle=[(from[0]+to[0])/2-dy/length*bend,(from[1]+to[1])/2+dx/length*bend];
+ const animation=cloud.animate([{transform:transform(from)},{transform:transform(middle),offset:.5},{transform:transform(to)}],{duration:16000+Math.random()*12000,easing:'cubic-bezier(.45,0,.55,1)',fill:'forwards'});
  animations.push(animation);
  animation.finished.then(()=>{if(token!==generation)return;cloud.style.transform=transform(to);animation.cancel();animations=animations.filter(a=>a!==animation);drift(cloud,to,token);}).catch(()=>{});
 }

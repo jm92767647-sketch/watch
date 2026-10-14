@@ -87,11 +87,11 @@ body[data-level="0"] #scene[data-mode="color"] .row-title{font-size:8px}
 html,body{background:#fdfdff!important;color:#0a0a0a}
 .site-backdrop{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#fdfdff;isolation:isolate}
 .color-cloud{position:absolute;inset:0;display:block;will-change:transform}
-.color-cloud:nth-child(1){background:radial-gradient(ellipse 40% 30% at 50% 50%,#cddff9,transparent);transform:translate(50vw,50dvh)}
-.color-cloud:nth-child(2){background:radial-gradient(ellipse 44% 50% at 50% 50%,#e8e2fc,transparent);transform:translate(40vw,28dvh)}
-.color-cloud:nth-child(3){background:radial-gradient(ellipse 45% 45% at 50% 50%,#cdeae9,transparent);transform:translate(-50vw,50dvh)}
-.color-cloud:nth-child(4){background:radial-gradient(ellipse 33% 48% at 50% 50%,#deebfc,transparent);transform:translate(-50vw,0)}
-.color-cloud:nth-child(5){background:radial-gradient(ellipse 50% 65% at 50% 50%,#cde8ef,transparent);transform:translate(50vw,-50dvh)}
-.color-cloud:nth-child(6){background:radial-gradient(ellipse 32% 30% at 50% 50%,#f6f3fe,transparent);transform:translate(0,-50dvh)}
-.color-cloud:nth-child(7){background:radial-gradient(ellipse 42% 48% at 50% 50%,#d8eeec,transparent);transform:translate(-50vw,-50dvh)}
+.color-cloud:nth-child(1){background:radial-gradient(ellipse 56% 42% at 50% 50%,#cddff9,transparent);transform:translate(50vw,50dvh)}
+.color-cloud:nth-child(2){background:radial-gradient(ellipse 62% 70% at 50% 50%,#e8e2fc,transparent);transform:translate(40vw,28dvh)}
+.color-cloud:nth-child(3){background:radial-gradient(ellipse 63% 63% at 50% 50%,#cdeae9,transparent);transform:translate(-50vw,50dvh)}
+.color-cloud:nth-child(4){background:radial-gradient(ellipse 46% 67% at 50% 50%,#deebfc,transparent);transform:translate(-50vw,0)}
+.color-cloud:nth-child(5){background:radial-gradient(ellipse 70% 91% at 50% 50%,#cde8ef,transparent);transform:translate(50vw,-50dvh)}
+.color-cloud:nth-child(6){background:radial-gradient(ellipse 45% 42% at 50% 50%,#f6f3fe,transparent);transform:translate(0,-50dvh)}
+.color-cloud:nth-child(7){background:radial-gradient(ellipse 59% 67% at 50% 50%,#d8eeec,transparent);transform:translate(-50vw,-50dvh)}
 @media(prefers-reduced-motion:reduce){.color-cloud{will-change:auto}}
