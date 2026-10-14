@@ -12,16 +12,16 @@ $('#viewport').addEventListener('pointermove',e=>{if(dragStart&&Math.abs(e.clien
 $('#viewport').addEventListener('pointerup',e=>{if(!dragStart)return;const dx=e.clientX-dragStart.x,dy=e.clientY-dragStart.y;dragStart=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3){ignoreClickUntil=Date.now()+350;page(dx<0?1:-1);}});
 $('#viewport').addEventListener('pointercancel',()=>dragStart=null);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function accepted(id){return ($('#minimum').checked&&W[id].minimum)||($('#limited').checked&&W[id].limited)||(!$('#minimum').checked&&!$('#limited').checked)}
-function filtered(){return $('#minimum').checked||$('#limited').checked}
+function accepted(id){return (isOn('minimum')&&W[id].minimum)||(isOn('limited')&&W[id].limited)||(!isOn('minimum')&&!isOn('limited'))}
+function filtered(){return isOn('minimum')||isOn('limited')}
 function allIds(){return [...new Set(rows.flatMap(g=>g.ids))]}
-function pageCount(){return level===0?1:level===1?rows.length:level===2?focusGroups.length:allIds().length}
+function pageCount(){return level===0?1:level===1?rows.length:level===2?(mode==='color'?rows.length:focusGroups.length):allIds().length}
 function prepare(){
  rows=[];focusGroups=[];
  if(filtered()){
   const ordered=D.groups[mode].flatMap(g=>g.ids);
   for(const [key,label] of [['minimum','최적화된 최소 컬렉션 6개'],['limited','50개 미만 극소수 한정생산판']]){
-   if($('#'+key).checked)rows.push({label,emphasis:key,ids:ordered.filter(id=>W[id][key])});
+   if(isOn(key))rows.push({label,emphasis:key,ids:ordered.filter(id=>W[id][key])});
   }
   focusGroups=rows.map(g=>({...g}));return;
  }
@@ -34,11 +34,11 @@ function prepare(){
 function card(id,first=false,span=1){
  const w=W[id],full=(window.FULL_PHOTOS||{})[id];
  const photo=level>0?(level===3&&flipped.has(id)&&full?.opposite?full.opposite:full):w.dialArt;
- const tag=mode==='brand'?(level===0?w.brand:shortBrands[w.brand]||w.brand):w.style;
+ const tag=mode==='brand'?w.brand:w.style;
  const imageSource=photo?photo.path+'?v='+photo.version:w.image;
  const artType=level>0?'full-photo':'dial-photo';
- const art=photo?.viewBox?`<svg class="watch-art ${artType}" role="img" aria-label="${esc(w.name)} · ${level>0?'전체':'다이얼'} 사진${level===3&&flipped.has(id)?' · 반대면':''}" viewBox="${photo.viewBox.join(' ')}"><image href="${esc(imageSource)}" width="${photo.dimensions[0]}" height="${photo.dimensions[1]}"/></svg>`:`<img class="${artType}" src="${esc(imageSource)}" alt="${esc(w.name)} · ${level>0?'전체':'다이얼'} 사진" draggable="false">`;
- return `<button class="watch ${selected===id?'selected ':''}${w.minimum?'minimum ':''}${w.limited?'limited ':''}${mode==='brand'?'':'style-'+w.styleColor}" data-id="${id}" aria-label="${esc(w.name)}" aria-pressed="${selected===id}"><span class="tag" style="--span:${span}">${first?esc(tag):''}</span>${art}<span class="label">${esc(level===3?w.name:modelName(w.name))}</span></button>`;
+ const art=photo?.viewBox?`<svg class="watch-art ${artType}" role="img" aria-label="${esc(w.name)} · ${level>0?'전체':'다이얼'} 사진${level===3&&flipped.has(id)?' · 반대면':''}" viewBox="${photo.viewBox.join(' ')}"><image onload="this.parentElement.dataset.loaded='true'" onerror="this.parentElement.dataset.loaded='error'" href="${esc(imageSource)}" width="${photo.dimensions[0]}" height="${photo.dimensions[1]}"/></svg>`:`<img class="${artType}" src="${esc(imageSource)}" alt="${esc(w.name)} · ${level>0?'전체':'다이얼'} 사진" draggable="false">`;
+ return `<button class="watch ${selected===id?'selected ':''}${w.minimum?'minimum ':''}${w.limited?'limited ':''}${mode==='brand'?'':'style-'+w.styleColor}" data-id="${id}" aria-label="${esc(w.name)}" aria-pressed="${selected===id}"><span class="tag" style="--span:${span}">${first?esc(tag):''}</span>${art}<span class="label">${esc(level===3?w.name:level>0?(shortBrands[w.brand]||w.brand)+' '+modelName(w.name):modelName(w.name))}</span></button>`;
 }
 function slots(ids,color=false){
  let html='',prev='',marked=false,columns=[];
@@ -51,7 +51,14 @@ function slots(ids,color=false){
  });
  return `<div class="slots" style="--columns:${ids.length};grid-template-columns:${columns.join(' ')}">${html}</div>`;
 }
-function displayRow(g,i,single=false){return `<div class="display-row ${single?'single-row':''} ${g.emphasis||''}" style="--row-count:${g.ids.length}">${mode==='color'?`<div class="row-title">${esc(g.label)}</div>`:''}${slots(g.ids,mode==='color')}</div>`}
+function tierSlots(ids,color=false,twoRows=false){
+ if(!twoRows||ids.length===1)return slots(ids,color);
+ const half=Math.ceil(ids.length/2),parts=[ids.slice(0,half),ids.slice(half)];
+ return `<div class="tiered" style="--tier-columns:${half}">${parts.map(part=>`<div class="tier" style="--tier-count:${part.length}">${slots(part,color)}</div>`).join('')}</div>`;
+}
+function displayRow(g,i,single=false){return `<div class="display-row ${single?'single-row':''} ${g.emphasis||''}" style="--row-count:${g.ids.length}">${mode==='color'?`<div class="row-title">${esc(g.label)}</div>`:''}${single?tierSlots(g.ids,mode==='color',true):slots(g.ids,mode==='color')}</div>`}
+function unifiedFocus(){return mode==='color'||(mode==='style'&&focusGroups[index]?.label==='MECHANICAL BEAUTY');}
+function isOn(key){return $('#'+key).getAttribute('aria-pressed')==='true';}
 function fitWatchLengths(){
  const arts=[...document.querySelectorAll('#scene .watch-art')];if(!arts.length)return;
  const frames=arts.map(art=>{
@@ -71,7 +78,7 @@ function render(){
  if(!ids.length)html='<p class="empty">표시할 시계가 없습니다.</p>';
  else if(level===0)html=rows.map((g,i)=>displayRow(g,i)).join('');
  else if(level===1)html=displayRow(rows[index],index,true);
- else if(level===2){const g=focusGroups[index];html=`<div class="focus"><h2 class="${mode==='style'?W[g.ids[0]].styleColor:''}">${esc(mode==='brand'?(shortBrands[g.label]||g.label):g.label)}</h2>${slots(g.ids)}</div>`}
+ else if(level===2){const g=mode==='color'?rows[index]:focusGroups[index];if(unifiedFocus())html=displayRow(g,index,true);else html=`<div class="focus"><h2 class="${mode==='style'?W[g.ids[0]].styleColor:''}">${esc(g.label)}</h2>${tierSlots(g.ids,false,g.ids.length>4)}</div>`}
  else{selected=ids[index];const w=W[selected],photo=(window.FULL_PHOTOS||{})[selected],source=flipped.has(selected)?photo?.opposite?.sourceUrl:photo?.sourceUrl;html=`<div class="focus solo${photo?.opposite?' reversible':''}"><h2>${esc(w.name)}</h2>${slots([selected])}<div class="watch-details">${photo?.opposite?`<button id="flip-watch" aria-pressed="${flipped.has(selected)}">↻ 뒤집기 · ${flipped.has(selected)?'원래 면 보기':'반대면 보기'}</button>`:''}${source?`<a class="photo-source" href="${esc(source)}" target="_blank" rel="noopener noreferrer">사진 출처 ↗</a>`:''}</div></div>`}
  $('#scene').dataset.mode=mode;document.body.dataset.level=level;$('#scene').style.setProperty('--rows',rows.length);$('#scene').style.setProperty('--max-columns',Math.max(...rows.map(g=>g.ids.length)));$('#prev').hidden=$('#next').hidden=level===0;$('#position').hidden=level===0;$('#scene').innerHTML=html;$('#viewport').scrollTop=0;if(matchMedia('(max-width:760px)').matches)window.scrollTo(0,0);fitWatchLengths();
  if($('#flip-watch'))$('#flip-watch').onclick=()=>{if(flipped.has(selected))flipped.delete(selected);else flipped.add(selected);render();$('#scene .watch-art')?.classList.add('flip-reveal');};
@@ -79,13 +86,13 @@ function render(){
  $('#minus').disabled=level===0;$('#plus').disabled=level===3;
  document.querySelectorAll('#levels [data-level]').forEach(b=>b.setAttribute('aria-pressed',Number(b.dataset.level)===level));
  $('#levels [data-level="2"]').textContent=mode==='brand'&&!filtered()?'한 브랜드':'한 분류';
- document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===mode));
+ document.querySelectorAll('nav [data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===mode));
 }
-function zoom(n){n=Math.max(0,Math.min(3,n));if(n===level)return;prepare();const ids=allIds(),row=Math.max(0,rows.findIndex(g=>g.ids.includes(selected)));index=n===3?Math.max(0,ids.indexOf(selected)):n===2?Math.max(0,focusGroups.findIndex(g=>g.ids.includes(selected))):n===1?row:0;level=n;render()}
-document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;index=0;$('#viewport').scrollTop=0;render()});document.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>zoom(Number(b.dataset.level)));$('#plus').onclick=()=>zoom(level+1);$('#minus').onclick=()=>zoom(level-1);['minimum','limited'].forEach(k=>$('#'+k).onchange=()=>{index=0;render()});$('#scene').onclick=e=>{if(Date.now()<ignoreClickUntil)return;const c=e.target.closest('[data-id]');if(!c)return;selected=Number(c.dataset.id);document.querySelectorAll('.watch').forEach(b=>{b.classList.toggle('selected',Number(b.dataset.id)===selected);b.setAttribute('aria-pressed',Number(b.dataset.id)===selected)})};$('#scene').ondblclick=e=>{if(e.target.closest('[data-id]'))zoom(3)};
-function page(delta){prepare();const ids=allIds(),total=pageCount();index=Math.max(0,Math.min(total-1,index+delta));selected=level===0?rows[0]?.ids[0]:level===1?rows[index]?.ids[0]:level===2?focusGroups[index]?.ids[0]:ids[index];render()}
+function zoom(n){n=Math.max(0,Math.min(3,n));if(n===level)return;prepare();const ids=allIds(),row=Math.max(0,rows.findIndex(g=>g.ids.includes(selected)));index=n===3?Math.max(0,ids.indexOf(selected)):n===2?Math.max(0,(mode==='color'?rows:focusGroups).findIndex(g=>g.ids.includes(selected))):n===1?row:0;level=n;render()}
+document.querySelectorAll('nav [data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;index=0;$('#viewport').scrollTop=0;render()});document.querySelectorAll('#levels [data-level]').forEach(b=>b.onclick=()=>zoom(Number(b.dataset.level)));$('#plus').onclick=()=>zoom(level+1);$('#minus').onclick=()=>zoom(level-1);['minimum','limited'].forEach(k=>$('#'+k).onclick=()=>{$('#'+k).setAttribute('aria-pressed',!isOn(k));index=0;render()});$('#scene').onclick=e=>{if(Date.now()<ignoreClickUntil)return;const c=e.target.closest('[data-id]');if(!c)return;selected=Number(c.dataset.id);document.querySelectorAll('.watch').forEach(b=>{b.classList.toggle('selected',Number(b.dataset.id)===selected);b.setAttribute('aria-pressed',Number(b.dataset.id)===selected)})};$('#scene').ondblclick=e=>{if(e.target.closest('[data-id]'))zoom(3)};
+function page(delta){prepare();const ids=allIds(),total=pageCount();index=Math.max(0,Math.min(total-1,index+delta));selected=level===0?rows[0]?.ids[0]:level===1?rows[index]?.ids[0]:level===2?(mode==='color'?rows:focusGroups)[index]?.ids[0]:ids[index];render()}
 $('#prev').onclick=()=>page(-1);$('#next').onclick=()=>page(1);let lastWheel=0;$('#viewport').addEventListener('wheel',e=>{if(e.ctrlKey||e.shiftKey)return;if(matchMedia('(max-width:760px)').matches&&$('#viewport').scrollHeight>$('#viewport').clientHeight)return;e.preventDefault();if(Date.now()-lastWheel<280)return;lastWheel=Date.now();zoom(level+(e.deltaY<0?1:-1))},{passive:false});$('#viewport').onkeydown=e=>{if(e.key==='+'||e.key==='='){zoom(level+1);e.preventDefault()}if(e.key==='-'){zoom(level-1);e.preventDefault()}if(e.key==='ArrowRight')page(1);if(e.key==='ArrowLeft')page(-1)};
-for(const key of ['major','independent'])$('#'+key).innerHTML=D[key].map((s,i)=>`<div class="rank-item"><strong>${String(i+1).padStart(2,'0')}</strong><p>${esc(s.replace(/^\d+\.\s*/,''))}</p></div>`).join('');$('#rank').onclick=()=>$('#rank-dialog').showModal();$('#close-rank').onclick=()=>$('#rank-dialog').close();$('#rank-dialog').onclick=e=>{if(e.target===e.currentTarget){const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.currentTarget.close()}};render();
+for(const key of ['major','independent'])$('#'+key).innerHTML=D[key].map((s,i)=>`<div class="rank-item"><strong>${String(i+1).padStart(2,'0')}</strong><p>${esc(s.replace(/^\d+\.\s*/,''))}</p></div>`).join('');$('#rank').onclick=()=>{$('#rank-dialog').showModal();$('#rank').setAttribute('aria-pressed','true');};$('#rank-dialog').addEventListener('close',()=>$('#rank').setAttribute('aria-pressed','false'));$('#close-rank').onclick=()=>$('#rank-dialog').close();$('#rank-dialog').onclick=e=>{if(e.target===e.currentTarget){const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.currentTarget.close()}};render();
 
 
 
