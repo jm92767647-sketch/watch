@@ -36,3 +36,8 @@ nav button[aria-pressed=true]{border:0}
 
 .site-backdrop video{filter:hue-rotate(-20deg) saturate(.45) brightness(1.65) blur(2px)}
 .site-backdrop video{filter:hue-rotate(-25deg) saturate(.25) brightness(2) blur(2px)}
+
+/* Keep video edges crisp and brighten the sky-blue highlights. */
+.site-backdrop video{opacity:1;filter:hue-rotate(-8deg) saturate(.3) brightness(2.5) contrast(1.15)}
+.background-overlay{background:linear-gradient(180deg,#0003,transparent 30%,transparent 72%,#0003);backdrop-filter:none}
+.sky-glow{opacity:.45;background:#86d9ff26}.bottom-glow{background:#b5eaff26}
