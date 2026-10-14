@@ -1,15 +1,7 @@
-<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#fffefa"><title>시계 컬렉션</title><link rel="stylesheet" href="style.css"></head>
-<body><header><div><small>MY LIFESTYLE ESSENTIALS</small><h1>시계 컬렉션 <span>98</span></h1></div><button id="rank">시계 브랜드 계급도 ↗</button></header>
-<main><div class="toolbar"><nav aria-label="분류 기준"><button data-mode="brand" aria-pressed="true">브랜드별</button><button data-mode="style" aria-pressed="false">스타일별</button><button data-mode="color" aria-pressed="false">색상별</button></nav><div class="filters"><label class="green"><input id="minimum" type="checkbox">✓ 최소 컬렉션 6개</label><label class="yellow"><input id="limited" type="checkbox">✓ 50개 미만 한정판</label></div></div>
-<div class="caption"><span id="description"></span><span id="count">98 WATCHES</span></div>
-<div id="style-legend" class="legend" hidden><span class="purple">● 선호 디자인 컬렉션</span><span class="blue">● 스타일별 컬렉션</span></div>
-<div id="color-order" hidden>Artistic Beauty → Complication (chronographe, complication) → Classic Beauty (calendar, novel classic) → Dress (minimal, classic, colorful) → Elegant (military, elegant, fancy) → Masculine (elegant masculine, masculine)</div>
-<section id="viewport" tabindex="0" aria-label="시계 전시"><div id="scene"></div></section>
-<footer><div class="paging"><button id="prev" aria-label="이전">←</button><span id="position"></span><button id="next" aria-label="다음">→</button></div><div class="zoom"><button id="minus" aria-label="축소">−</button><div id="levels"><button data-level="0" aria-pressed="true">3줄 보기</button><button data-level="1">한 줄</button><button data-level="2">한 분류</button><button data-level="3">시계 한 개</button></div><button id="plus" aria-label="확대">＋</button></div><span class="hint">휠로 확대·축소</span></footer></main>
-<p class="note">초록 ✓ 최적화된 최소 시계 6개 · 노랑 ✓ 50개 미만 극소수 한정생산판 · 시계를 선택한 뒤 확대하면 해당 시계를 자세히 볼 수 있습니다. <a href="photo-sources.html" target="_blank" rel="noopener noreferrer">전체 사진 출처 ↗</a></p>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071322"><title>watch</title><link rel="stylesheet" href="style.css?v=allview1"></head><body>
+<div class="site-backdrop" aria-hidden="true"><video id="ambient-video" muted playsinline loop preload="auto"></video><div class="backdrop-shade"></div></div>
+<header><h1>watch <span id="count">98</span></h1><button id="rank">Brand</button><nav aria-label="분류 기준"><button data-mode="brand" aria-pressed="true">브랜드별</button><button data-mode="style">스타일별</button><button data-mode="color">색상별</button></nav><div class="filters"><label class="green"><input id="minimum" type="checkbox">최소 6개</label><label class="yellow"><input id="limited" type="checkbox">50개 미만</label></div></header>
+<main><section id="viewport" tabindex="0" aria-label="시계 전시"><div id="scene"></div></section></main>
+<footer><button id="prev" aria-label="이전">←</button><div class="view-controls"><span id="position"></span><div id="levels"><button data-level="0">전체보기</button><button data-level="1">한 줄</button><button data-level="2">한 브랜드</button><button data-level="3">한 개</button></div></div><button id="next" aria-label="다음">→</button></footer><button id="minus" hidden></button><button id="plus" hidden></button>
 <dialog id="rank-dialog"><div class="dialog-head"><div><small>PERSONAL BRAND HIERARCHY</small><h2>시계 브랜드 계급도</h2><p>원본 문서의 매우 주관적인 순위</p></div><button id="close-rank" aria-label="계급도 닫기">✕</button></div><div class="rank-panels"><section><h3>메이저 브랜드</h3><div id="major"></div></section><section><h3>독립 워치메이커</h3><div id="independent"></div></section></div></dialog>
-<script src="data.js"></script><script src="photos.js"></script><script src="app.js"></script></body></html>
-
-
-
+<script src="vendor/hls.light.min.js" defer></script><script src="background.js" defer></script><script src="data.js"></script><script src="photos.js"></script><script src="app.js?v=allview1" defer></script></body></html>
