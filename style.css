@@ -110,3 +110,13 @@ body[data-level="1"] #scene[data-mode="color"] .tag{font-size:10px;line-height:1
 /* One viewport-sized canvas avoids oversized animated GPU layers on phones. */
 .canvas-background .color-cloud{display:none;will-change:auto}
 .ambient-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+/* Optical glass is painted inside the existing cards: no layout space or image size is lost. */
+body:is([data-level="0"],[data-level="1"],[data-level="2"],[data-level="3"]) .watch{border-radius:5px}
+body:is([data-level="0"],[data-level="1"],[data-level="2"],[data-level="3"]) .watch::before{
+ content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+ background:radial-gradient(ellipse at 50% 52%,#e4f4ff13,transparent 68%),linear-gradient(125deg,#ffffff24,#90abc508 42%,#d9edff0c 76%,#ffffff28);
+ box-shadow:inset 0 0 0 .5px #ffffffa6,inset 0 1px 2px #ffffffb8,inset 0 -1px 2px #ecf8ff70,inset 2px 0 6px #b7dfff18,inset -2px 0 6px #b7dfff18,0 2px 4px #233d501a;
+}
+body:is([data-level="0"],[data-level="1"],[data-level="2"],[data-level="3"]) .watch>.watch-art,
+body:is([data-level="0"],[data-level="1"],[data-level="2"],[data-level="3"]) .watch>.label{position:relative}
