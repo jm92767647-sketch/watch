@@ -95,3 +95,6 @@ html,body{background:#fdfdff!important;color:#0a0a0a}
 .color-cloud:nth-child(6){background:radial-gradient(ellipse 32vw 30dvh at 50% 50%,#f6f3fe,transparent);transform:translate(0,-50dvh)}
 .color-cloud:nth-child(7){background:radial-gradient(ellipse 42vw 48dvh at 50% 50%,#d8eeec,transparent);transform:translate(-50vw,-50dvh)}
 @media(prefers-reduced-motion:reduce){.color-cloud{will-change:auto}}
+
+/* Keep the lavender peak visible above the other pastel layers. */
+.color-cloud:nth-child(2){z-index:1;transform:translate(28vw,28dvh);opacity:1}
