@@ -99,7 +99,7 @@ function fitWatchLengths(){
 const viewport=$('#viewport'),scene=$('#scene'),motionReduced=matchMedia('(prefers-reduced-motion:reduce)');
 const camera={x:0,y:0,z:1},target={x:0,y:0,z:1},pointers=new Map();
 let items=[],markers=[],viewWidth=0,viewHeight=0,worldHeight=0,maxZoom=12,frameId=0,previousFrame=0,lastAssets=0,geometryKey='',dragVelocity={x:0,y:0},lastPointerTime=0,ignoreTapUntil=0;
-let firstLayout=true,resizeTimer,gesture=null,layoutFit=1,closeZoom=Infinity,unitWidth=80,unitHeight=84,mobilePitch=94,mobileRowPitch=150,overviewFloor=.06,lockedId=100,tapStart=null;
+let firstLayout=true,resizeTimer,gesture=null,layoutFit=1,closeZoom=Infinity,unitWidth=80,unitHeight=84,mobilePitch=94,mobileRowPitch=150,overviewFloor=.06,lockedId=100,tapStart=null,filterPhotoLimit=1;
 function filtered(){return isOn('minimum')||isOn('limited')}
 function allIds(){return [...new Set(rows.flatMap(g=>g.ids))]}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
@@ -107,7 +107,7 @@ function smooth(a,b,v){const t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)}
 function survey(){return viewWidth>760&&(mode==='style'||mode==='color')}
 function minZoom(){return viewWidth<=760?overviewFloor:1}
 function isolation(z){return Number.isFinite(closeZoom)?smooth(closeZoom,maxZoom,z):0}
-function photoScale(z){z=Math.min(z,closeZoom);return survey()?(z<=1.7?1+(layoutFit-1)*smooth(1,1.7,z):layoutFit+(z-1.7)*1.2):z}
+function photoScale(z){z=Math.min(z,closeZoom);if(viewWidth>760&&filtered())return 1+(filterPhotoLimit-1)*smooth(1,closeZoom,z);return survey()?(z<=1.7?1+(layoutFit-1)*smooth(1,1.7,z):layoutFit+(z-1.7)*1.2):z}
 function zoomForPhotoScale(scale){return survey()?1.7+Math.max(0,scale-layoutFit)/1.2:scale}
 function morph(z){return survey()?smooth(2.05,2.55,z):smooth(1.75,2.6,z)}
 function spread(z){const base=1+(viewWidth>760?.7:.16)*smooth(2.4,4.5,z),single=viewWidth<=760?(viewWidth/2+unitWidth*photoScale(z)*.55+16)/(mobilePitch*photoScale(z)):viewWidth/(unitWidth*photoScale(z))+1.15;return base+(Math.max(base,single)-base)*isolation(z)}
@@ -141,6 +141,7 @@ function buildLayout(focusId=null,keepZoom=false){
  layoutFit=clamp((viewWidth-28)/Math.max(1,right-left),1,1.4);
  unitWidth=Math.min(...items.map(i=>i.w));unitHeight=Math.min(...items.map(i=>i.h));
  closeZoom=clamp(zoomForPhotoScale(viewHeight*(viewWidth>760?.80:.68)/(unitHeight*1.65)),2.65,12);
+ if(viewWidth>760&&filtered()){filterPhotoLimit=Math.max(1,viewHeight*.8/(Math.max(...items.map(i=>i.h))*1.65));closeZoom=4.8;}
  maxZoom=closeZoom*(viewWidth<=760?1.4:1.18);
  scene.className='exploration';scene.style.cssText='';
  scene.innerHTML=items.map(i=>{const w=W[i.id],photo=window.FULL_PHOTOS[i.id];return `<article class="explore-watch ${i.className}" data-id="${i.id}" aria-label="${esc(w.name)}"><span class="explore-tag">${esc(i.tagText)}</span><div class="explore-art">${svgPhoto(w.dialArt,'dial-layer')}${svgPhoto(photo,'full-layer')}</div><span class="explore-label">${esc((w.minimum||w.limited?'✓ ':'')+displayModel(w))}</span><div class="explore-details style-${w.styleColor}"><p class="brand-name">${esc(w.brand)}</p><h2>${esc(modelName(w.name))}</h2><p class="style-name">${esc(w.style)}</p><p>${esc(w.color)}</p>${photo?.opposite?`<button class="flip-control" data-flip="${i.id}" aria-pressed="${flipped.has(i.id)}">↻ ${flipped.has(i.id)?'원래 면':'반대면'} 보기</button>`:''}</div></article>`;}).join('')+markers.map(m=>`<span class="board-marker">${esc(m.text)}</span>`).join('');
