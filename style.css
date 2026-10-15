@@ -113,6 +113,11 @@ body[data-level="1"] #scene[data-mode="color"] .tag{font-size:10px;line-height:1
 
 
 /* Continuous camera. The measuring pass uses the unchanged overview layout. */
+@font-face{font-family:'DM Sans';src:url('fonts/dm-sans-variable.ttf') format('truetype');font-weight:100 1000;font-style:normal;font-display:swap}
+@font-face{font-family:'S-Core Dream';src:url('fonts/s-core-dream-regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'S-Core Dream';src:url('fonts/s-core-dream-medium.woff2') format('woff2');font-weight:500 900;font-style:normal;font-display:swap}
+:root{font-family:'DM Sans','S-Core Dream',sans-serif}
+body,button,input,h1,h2,h3,h4,p,span,a,small,li,.focus h2{font-family:'DM Sans','S-Core Dream',sans-serif}
 html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 body{display:flex;flex-direction:column}
 header{flex-shrink:0;z-index:5}
