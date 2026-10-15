@@ -127,7 +127,7 @@ main{flex:1;min-height:0}
 #viewport.dragging{cursor:grabbing}
 #scene.measuring{height:calc(100dvh - 100px);margin:4px 14px 0}
 #scene:not(.measuring){position:absolute;inset:0;display:block!important;height:100%!important;overflow:visible;contain:layout style}
-.explore-watch{position:absolute;left:0;top:0;display:block;padding:0;border:0;background:none;box-shadow:none;user-select:none;text-align:center;pointer-events:none;transform-origin:0 0}
+.explore-watch{position:absolute;left:0;top:0;display:block;padding:0;border:0;background:none;box-shadow:none;user-select:none;text-align:center;pointer-events:auto;transform-origin:0 0}
 .explore-art{position:absolute;left:0;top:0;display:block;overflow:visible;pointer-events:none}
 .explore-art svg{position:absolute;display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
 .explore-tag{position:absolute;left:0;text-align:left;font-weight:700;line-height:1.2;white-space:normal;pointer-events:none}
@@ -143,13 +143,22 @@ main{flex:1;min-height:0}
 #gesture-hint{position:absolute;bottom:12px;left:0;right:0;z-index:3;text-align:center;margin:0;font-size:10px;color:#33465a;opacity:.6;pointer-events:none;transition:opacity 1s}
 #number-dialog{background:#f9fbfff5;color:#182432;border:1px solid #bac8da;width:min(1050px,94vw)}
 #number-total{font-size:12px;color:#52616e}
-#number-panels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
-.number-section h3{font-size:13px;margin:16px 0 10px}.number-section ul{list-style:none;margin:0;padding:0}.number-section li{display:flex;justify-content:space-between;gap:15px;font-size:11px;line-height:1.5;border-top:1px solid #74899d24;padding:7px 0}.number-section strong{font-variant-numeric:tabular-nums}
+#number-panels{display:flex;flex-direction:column;gap:12px}
+.number-section h3{font-size:13px;margin:16px 0 10px}.number-section ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 0}.number-section li{display:inline-flex;align-items:baseline;white-space:nowrap;gap:5px;font-size:12px;line-height:1.8}.number-section li:not(:last-child)::after{content:'/';margin:0 10px;color:#8593a2}.number-section strong{font-variant-numeric:tabular-nums}
+.explore-watch[aria-current=true] .explore-label{text-decoration:underline;text-underline-offset:4px}
+.site-backdrop{background:#111820!important;overflow:hidden}
+.site-backdrop video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% center}
+header,header h1,header button,header button:hover,header button[aria-pressed=true]{color:#f4f7ff!important}header button[aria-pressed=false],header nav button:not([aria-pressed=true]){opacity:.6!important}header button[aria-pressed=true]{opacity:1!important}header .green,header .green[aria-pressed=true]{color:#a5edc2!important}header .yellow,header .yellow[aria-pressed=true]{color:#ffe2a0!important}
+body{color:#f4f6fa}header{text-shadow:0 1px 6px #0009}header button{color:#fff}header button[aria-pressed=false],header nav button:not([aria-pressed=true]){opacity:.55}header button[aria-pressed=true]{opacity:1}h1{color:#fff}.explore-label,.explore-details,.explore-details h2{color:#f9fbff;text-shadow:0 1px 5px #000b}.explore-details .brand-name{color:#f1f4f8}.style-purple .explore-tag,.explore-details.style-purple .style-name{color:#dfbaff}.style-blue .explore-tag,.explore-details.style-blue .style-name{color:#a5d6ff}.minimum .explore-label{color:#a5edc2}.limited .explore-label{color:#ffe2a0}.board-marker,#gesture-hint{color:#e9f0f8;text-shadow:0 1px 5px #000a}
 @media(max-width:760px){
  header{padding-right:64px;position:relative}#numbers{position:absolute;right:7px;top:6px;padding:6px 4px;font-size:9px}
  #scene.measuring{margin:10px 8px 0;height:auto}
  #viewport{padding:0;height:100%;min-height:0;overflow:hidden}
  .explore-details{font-size:11px}.explore-details h2{font-size:14px}
+ .explore-tag{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-height:24px;overflow-wrap:normal;word-break:keep-all;line-height:1.15}
+ .explore-label{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-height:42px;word-break:keep-all;overflow-wrap:normal;line-height:1.2}
+ .site-backdrop video{object-position:70% center}
+ .number-section li{font-size:11px}.number-section li:not(:last-child)::after{margin:0 7px}
  #number-panels{grid-template-columns:1fr;gap:10px}
  #gesture-hint{font-size:9px;bottom:10px}
 }
