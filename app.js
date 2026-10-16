@@ -100,6 +100,7 @@ const viewport=$('#viewport'),scene=$('#scene'),motionReduced=matchMedia('(prefe
 const camera={x:0,y:0,z:1},target={x:0,y:0,z:1},pointers=new Map();
 let items=[],markers=[],viewWidth=0,viewHeight=0,worldHeight=0,maxZoom=12,frameId=0,previousFrame=0,lastAssets=0,geometryKey='',dragVelocity={x:0,y:0},lastPointerTime=0,ignoreTapUntil=0;
 let firstLayout=true,resizeTimer,gesture=null,layoutFit=1,closeZoom=Infinity,unitWidth=80,unitHeight=84,mobilePitch=94,mobileRowPitch=150,overviewFloor=.06,lockedId=100,tapStart=null,filterPhotoLimit=1;
+let desktopPitchX=80,desktopPitchY=100,desktopWidth=80,desktopHeight=84,numberByCount=false;
 function filtered(){return isOn('minimum')||isOn('limited')}
 function allIds(){return [...new Set(rows.flatMap(g=>g.ids))]}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
@@ -110,8 +111,8 @@ function isolation(z){return Number.isFinite(closeZoom)?smooth(closeZoom,maxZoom
 function photoScale(z){z=Math.min(z,closeZoom);if(viewWidth>760&&filtered())return 1+(filterPhotoLimit-1)*smooth(1,closeZoom,z);return survey()?(z<=1.7?1+(layoutFit-1)*smooth(1,1.7,z):layoutFit+(z-1.7)*1.2):z}
 function zoomForPhotoScale(scale){return survey()?1.7+Math.max(0,scale-layoutFit)/1.2:scale}
 function morph(z){return survey()?smooth(2.05,2.55,z):smooth(1.75,2.6,z)}
-function spread(z){const base=1+(viewWidth>760?.7:.16)*smooth(2.4,4.5,z),single=viewWidth<=760?(viewWidth/2+unitWidth*photoScale(z)*.55+16)/(mobilePitch*photoScale(z)):viewWidth/(unitWidth*photoScale(z))+1.15;return base+(Math.max(base,single)-base)*isolation(z)}
-function stretch(z){const base=viewWidth<=760?1+morph(z)*.2:1+(survey()?.06*smooth(1,2.05,z):0)+morph(z)*.85+smooth(2.6,5,z)*.4,single=viewWidth<=760?(viewHeight/2+unitHeight*photoScale(z)*.825+70)/(mobileRowPitch*photoScale(z)):viewHeight/(unitHeight*photoScale(z))+2;return base+(Math.max(base,single)-base)*isolation(z)}
+function spread(z){const base=1+(viewWidth>760?.7:.16)*smooth(2.4,4.5,z),single=viewWidth<=760?(viewWidth/2+unitWidth*photoScale(z)*.55+16)/(mobilePitch*photoScale(z)):(viewWidth/2+desktopWidth*photoScale(z)*.55+8)/(desktopPitchX*photoScale(z));return base+((viewWidth<=760?Math.max(base,single):single)-base)*isolation(z)}
+function stretch(z){const base=viewWidth<=760?1+morph(z)*.2:1+(survey()?.06*smooth(1,2.05,z):0)+morph(z)*.85+smooth(2.6,5,z)*.4,single=viewWidth<=760?(viewHeight/2+unitHeight*photoScale(z)*.825+70)/(mobileRowPitch*photoScale(z)):(Math.max(viewHeight*.57+8,viewHeight*.43+138)+desktopHeight*photoScale(z)*.825)/(desktopPitchY*photoScale(z));return base+((viewWidth<=760?Math.max(base,single):single)-base)*isolation(z)}
 function xScale(z){return photoScale(z)*spread(z)}
 function yScale(z){return photoScale(z)*stretch(z)}
 function mobileUnwrap(z){return viewWidth<=760?1:0}
@@ -140,6 +141,7 @@ function buildLayout(focusId=null,keepZoom=false){
  const left=Math.min(...items.map(i=>i.cx-i.w/2)),right=Math.max(...items.map(i=>i.cx+i.w/2));
  layoutFit=clamp((viewWidth-28)/Math.max(1,right-left),1,1.4);
  unitWidth=Math.min(...items.map(i=>i.w));unitHeight=Math.min(...items.map(i=>i.h));
+ if(viewWidth>760){desktopWidth=Math.max(...items.map(i=>i.w));desktopHeight=Math.max(...items.map(i=>i.h));const dx=[],dy=[];for(let a=0;a<items.length;a++)for(let b=a+1;b<items.length;b++){const x=Math.abs(items[a].cx-items[b].cx),y=Math.abs(items[a].cy-items[b].cy);if(y<unitHeight*.4&&x>1)dx.push(x);if(y>unitHeight*.5)dy.push(y);}desktopPitchX=dx.length?Math.min(...dx):viewWidth;desktopPitchY=dy.length?Math.min(...dy):viewHeight;}
  closeZoom=clamp(zoomForPhotoScale(viewHeight*(viewWidth>760?.80:.68)/(unitHeight*1.65)),2.65,12);
  if(viewWidth>760&&filtered()){filterPhotoLimit=Math.max(1,viewHeight*.8/(Math.max(...items.map(i=>i.h))*1.65));closeZoom=4.8;}
  maxZoom=closeZoom*(viewWidth<=760?1.4:1.18);
@@ -171,7 +173,7 @@ function draw(now){
  const changed=geometry!==geometryKey;geometryKey=geometry;
  let nearest=null,distance=Infinity;
  for(const i of items){
-  const p=position(i,z),x=camera.x+p.x*sx,y=camera.y+p.y*sy,aw=i.w*visual,ah=i.h*visual*(1+blend*.65),shown=x+aw*.7>0&&x-aw*.7<viewWidth&&y+ah/2+130>0&&y-ah/2<viewHeight;
+  const p=position(i,z),x=camera.x+p.x*sx,y=camera.y+p.y*sy,aw=i.w*visual,ah=i.h*visual*(1+blend*.65),edge=aw*(viewWidth>760&&isolation(z)>.99?.55:.7),shown=x+edge>0&&x-edge<viewWidth&&y+ah/2+130>0&&y-ah/2<viewHeight;
   if(shown!==i.visible){i.element.hidden=!shown;i.visible=shown;if(!shown)i.element.querySelectorAll('image[href]').forEach(image=>image.removeAttribute('href'));}
   if(!shown)continue;
   i.element.style.transform=`translate3d(${x-aw/2}px,${y-ah/2}px,0)`;
@@ -242,13 +244,15 @@ scene.addEventListener('click',e=>{const button=e.target.closest('[data-flip]');
 function hideHint(){$('#gesture-hint').style.opacity='0'}
 document.querySelectorAll('nav [data-mode]').forEach(button=>button.onclick=()=>{const focus=selected;mode=button.dataset.mode;buildLayout(focus,true)});
 ['minimum','limited'].forEach(key=>$('#'+key).onclick=()=>{$('#'+key).setAttribute('aria-pressed',!isOn(key));buildLayout();});
+function numberEntries(counts){const entries=counts.filter(([,n])=>n);return numberByCount?entries.sort((a,b)=>b[1]-a[1]):entries}
 function numberContent(){
  const ids=allIds(),set=new Set(ids),brands=new Map();for(const id of ids)brands.set(W[id].brand,(brands.get(W[id].brand)||0)+1);
  const sections=[['브랜드별',[...brands]],['스타일별',D.groups.style.map(g=>[g.label,g.ids.filter(id=>set.has(id)).length])],['색상별',D.groups.color.map(g=>[g.label,g.ids.filter(id=>set.has(id)).length])]];
  $('#number-total').textContent=`현재 컬렉션 ${ids.length}개 · 브랜드 ${brands.size}개 · 스타일 ${sections[1][1].filter(([,n])=>n).length}개 · 색상 ${sections[2][1].filter(([,n])=>n).length}개`;
- $('#number-panels').innerHTML=sections.map(([title,counts])=>`<section class="number-section"><h3>${title}</h3><ul>${counts.filter(([,n])=>n).map(([label,n])=>`<li><span>${esc(label)}</span>${n>1?` <strong>${n}</strong>`:''}</li>`).join('')}</ul></section>`).join('');
+ $('#number-sort').textContent=numberByCount?'위치별':'갯수별';$('#number-sort').setAttribute('aria-pressed',String(numberByCount));
+ $('#number-panels').innerHTML=sections.map(([title,counts])=>`<section class="number-section"><h3>${title}</h3><ul>${numberEntries(counts).map(([label,n])=>`<li><span>${esc(label)}</span>${n>1?` <strong>${n}</strong>`:''}</li>`).join('')}</ul></section>`).join('');
 }
-$('#numbers').onclick=()=>{numberContent();$('#number-dialog').showModal()};$('#close-numbers').onclick=()=>$('#number-dialog').close();
+$('#numbers').onclick=()=>{numberByCount=false;numberContent();$('#number-dialog').showModal()};$('#number-sort').onclick=()=>{numberByCount=!numberByCount;numberContent()};$('#close-numbers').onclick=()=>$('#number-dialog').close();
 for(const key of ['major','independent'])$('#'+key).innerHTML=D[key].map((s,i)=>`<div class="rank-item"><strong>${String(i+1).padStart(2,'0')}</strong><p>${esc(s.replace(/^\d+\.\s*/,''))}</p></div>`).join('');
 $('#rank').onclick=()=>{$('#rank-dialog').showModal();$('#rank').setAttribute('aria-pressed','true')};$('#rank-dialog').addEventListener('close',()=>$('#rank').setAttribute('aria-pressed','false'));$('#close-rank').onclick=()=>$('#rank-dialog').close();
 document.querySelectorAll('dialog').forEach(dialog=>dialog.addEventListener('click',e=>{if(e.target!==dialog)return;const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}));

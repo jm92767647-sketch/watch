@@ -143,6 +143,7 @@ main{flex:1;min-height:0}
 #gesture-hint{position:absolute;bottom:12px;left:0;right:0;z-index:3;text-align:center;margin:0;font-size:10px;color:#33465a;opacity:.6;pointer-events:none;transition:opacity 1s}
 #number-dialog{background:#f9fbfff5;color:#182432;border:1px solid #bac8da;width:min(1050px,94vw)}
 #number-total{font-size:12px;color:#52616e}
+.number-heading{display:flex;align-items:center;gap:14px}#number-sort{border:1px solid #64758d70;border-radius:5px;padding:5px 11px;font-size:11px;color:#26394c;background:#fff8;white-space:nowrap}#number-sort[aria-pressed=true]{background:#d6e5f4;border-color:#7893af}
 #number-panels{display:flex;flex-direction:column;gap:12px}
 .number-section h3{font-size:13px;margin:16px 0 10px}.number-section ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 0}.number-section li{display:inline-flex;align-items:baseline;white-space:nowrap;gap:5px;font-size:12px;line-height:1.8}.number-section li:not(:last-child)::after{content:'/';margin:0 10px;color:#8593a2}.number-section strong{font-variant-numeric:tabular-nums}
 .explore-watch[aria-current=true] .explore-label{text-decoration:underline;text-underline-offset:4px}
