@@ -2,6 +2,9 @@
 let presentation='list',catalogMode='brand',catalogGroup=null,catalogObserver=null;
 const catalogPane=document.querySelector('#catalog-pane');
 const modeTitles={brand:'브랜드별',style:'스타일별',color:'색상별'};
+const catalogBrands={'폴 쥬른':'F.P. Journe','드 베튠':'De Bethune','리차드 밀':'Richard Mille','랑앤하이네':'Lang & Heyne','로랑 페리에':'Laurent Ferrier','파텍 필립':'Patek Philippe','바쉐론 콘스탄틴':'Vacheron Constantin','오데마 피게':'Audemars Piguet','랑에 운트 죄네':'A. Lange & Söhne','브레게':'Breguet','예거 르쿨트르':'Jaeger-LeCoultre','블랑팡':'Blancpain','쇼파드':'Chopard','피아제':'Piaget','불가리':'Bulgari','자케 드로':'Jaquet Droz','위블로':'Hublot','IWC':'IWC','제니스':'Zenith','롤렉스':'Rolex','까르띠에':'Cartier','오메가':'Omega','브라이틀링':'Breitling','파네라이':'Panerai','그랜드 세이코':'Grand Seiko','세이코':'Seiko','태그호이어':'TAG Heuer','론진':'Longines','크로노스위스':'Chronoswiss','레이몬드 웨일':'Raymond Weil','노모스':'NOMOS Glashütte','해밀턴':'Hamilton'};
+const catalogColors={'골드 · 화이트 다이얼':'Gold · White Dial','실버 · 화이트 다이얼':'Silver · White Dial','실버 · 블랙 다이얼':'Silver · Black Dial','실버 · 블루 다이얼':'Silver · Blue Dial','실버 · 특이 색상 다이얼':'Silver · Other Dial Colors','골드 · 특이 색상 다이얼':'Gold · Other Dial Colors','스켈레톤 다이얼':'Skeleton Dial'};
+function catalogLabel(label,kind=catalogMode){return (kind==='brand'?catalogBrands:kind==='color'?catalogColors:{})[label]||label;}
 function catalogGroups(kind=catalogMode){
  const allowed=id=>!filtered()||(isOn('minimum')&&W[id].minimum)||(isOn('limited')&&W[id].limited);
  if(kind==='brand'){
@@ -24,9 +27,9 @@ function fitCatalog(){
 }
 function renderCatalog(){
  catalogObserver?.disconnect();const groups=catalogGroups();const group=groups.find(g=>g.label===catalogGroup);catalogNav();
- if(!group){catalogGroup=null;const split=Math.ceil(groups.length/2),column=gs=>`<div class="catalog-column">${gs.map(g=>`<button class="catalog-entry" data-group="${esc(g.label)}"><span>${esc(g.label)}</span><span aria-hidden="true">+</span></button>`).join('')}</div>`;catalogPane.innerHTML=`<div class="catalog-directory">${column(groups.slice(0,split))}${column(groups.slice(split))}</div>`;}
+ if(!group){catalogGroup=null;const split=Math.ceil(groups.length/2),column=gs=>`<div class="catalog-column">${gs.map(g=>`<button class="catalog-entry" data-group="${esc(g.label)}"><span>${esc(catalogLabel(g.label))}</span><span aria-hidden="true">+</span></button>`).join('')}</div>`;catalogPane.innerHTML=`<div class="catalog-directory">${column(groups.slice(0,split))}${column(groups.slice(split))}</div>`;}
  else{
-  catalogPane.innerHTML=`<div class="catalog-group-head"><button id="catalog-back">← ${modeTitles[catalogMode]}</button><h2>${esc(group.label)}</h2><span>${group.ids.length}</span></div><div class="catalog-products-area"><div class="catalog-products">${group.ids.map(id=>`<article class="catalog-card" data-watch="${id}"><div class="catalog-photo">${catalogArt(id)}${window.FULL_PHOTOS[id].opposite?`<button class="catalog-flip" data-catalog-flip="${id}" aria-label="${esc(W[id].name)} 반대면 보기" aria-pressed="${flipped.has(id)}">↻</button>`:''}</div><div class="catalog-caption"><span>${esc(W[id].brand)}</span><h3>${esc(modelName(W[id].name))}</h3></div></article>`).join('')}</div></div>`;
+  catalogPane.innerHTML=`<div class="catalog-group-head"><button id="catalog-back" aria-label="뒤로가기"><svg viewBox="0 0 32 24" fill="none" aria-hidden="true"><path d="M30 12H3M13 2 3 12l10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2>${esc(catalogLabel(group.label))}</h2><span>${group.ids.length}</span></div><div class="catalog-products-area"><div class="catalog-products">${group.ids.map(id=>`<article class="catalog-card" data-watch="${id}"><div class="catalog-photo">${catalogArt(id)}${window.FULL_PHOTOS[id].opposite?`<button class="catalog-flip" data-catalog-flip="${id}" aria-label="${esc(W[id].name)} 반대면 보기" aria-pressed="${flipped.has(id)}">↻</button>`:''}</div><div class="catalog-caption"><span>${esc(catalogLabel(W[id].brand,'brand'))}</span><h3>${esc(modelName(W[id].name))}</h3></div></article>`).join('')}</div></div>`;
   fitCatalog();
   if('IntersectionObserver' in window){catalogObserver=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)loadCatalogCard(e.target);else e.target.querySelector('image')?.removeAttribute('href');}),{root:catalogPane,rootMargin:'250px'});catalogPane.querySelectorAll('.catalog-card').forEach(card=>catalogObserver.observe(card));}
   else catalogPane.querySelectorAll('.catalog-card').forEach(loadCatalogCard);
@@ -45,7 +48,9 @@ function setPresentation(next){
 document.querySelectorAll('[data-presentation-button]').forEach(b=>b.onclick=()=>setPresentation(b.dataset.presentationButton));
 document.querySelectorAll('nav [data-mode]').forEach(button=>{const original=button.onclick;button.onclick=()=>{if(presentation==='free')original();else{catalogMode=button.dataset.mode;catalogGroup=null;renderCatalog();}};});
 ['minimum','limited'].forEach(key=>{const button=$('#'+key),original=button.onclick;button.onclick=()=>{if(presentation==='free')original();else{button.setAttribute('aria-pressed',String(!isOn(key)));prepare();$('#count').textContent=allIds().length;renderCatalog();}};});
-const originalNumbers=$('#numbers').onclick;$('#numbers').onclick=()=>{if(presentation==='list'){mode=catalogMode;prepare();}originalNumbers();};
+function syncNumberOrder(){const group=$('#number-order');group.dataset.order=numberByCount?'count':'position';group.querySelectorAll('[data-number-order]').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.numberOrder==='count')===numberByCount)));}
+const originalNumbers=$('#numbers').onclick;$('#numbers').onclick=()=>{if(presentation==='list'){mode=catalogMode;prepare();}originalNumbers();syncNumberOrder();};
+document.querySelectorAll('[data-number-order]').forEach(button=>button.onclick=()=>{if((button.dataset.numberOrder==='count')!==numberByCount)$('#number-sort').onclick();syncNumberOrder();});
 catalogPane.onclick=e=>{
  const group=e.target.closest('[data-group]');if(group){catalogGroup=group.dataset.group;renderCatalog();return;}
  if(e.target.closest('#catalog-back')){catalogGroup=null;renderCatalog();return;}
