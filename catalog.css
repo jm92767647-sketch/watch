@@ -21,13 +21,14 @@ body[data-presentation=free] #catalog-pane{display:none}
 #catalog-pane{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;padding:0 16px 12px;scrollbar-width:thin}
 .catalog-directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,5vw,76px);margin:0;padding:22px 0 24px}
 .catalog-column{display:flex;flex-direction:column;gap:18px;min-width:0}
+@media(min-width:761px){#catalog-pane[data-mode=style] .catalog-directory,#catalog-pane[data-mode=color] .catalog-directory{min-height:100%;box-sizing:border-box}#catalog-pane[data-mode=style] .catalog-column,#catalog-pane[data-mode=color] .catalog-column{justify-content:space-between}}
 .catalog-entry{display:flex;align-items:center;justify-content:space-between;gap:20px;text-align:left;width:100%;padding:0 0 6px;margin:0;border:0;border-bottom:1px solid #8a8985;border-radius:0;color:#171817;font-size:clamp(17px,1.35vw,20px);font-weight:400;line-height:1.25;letter-spacing:-.025em}
 .catalog-entry>span:last-child{flex:none;font-size:22px;line-height:1;font-weight:300;width:24px;text-align:center}
 .catalog-entry:hover{color:#74746e}
 .catalog-group-head{height:46px;display:flex;align-items:center;justify-content:center;gap:9px;position:relative;margin-bottom:6px}
 .catalog-group-head h2{font-size:18px;font-weight:500;margin:0;letter-spacing:-.025em}.catalog-group-head>span{font-size:10px;color:#777873}
 #catalog-back{position:absolute;left:0;width:56px;height:44px;display:flex;align-items:center;justify-content:flex-start;color:#374149;padding:0}#catalog-back svg{width:36px;height:28px;display:block}
-.number-order-switch{position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(2,1fr);width:172px;height:32px;flex:none;padding:3px;background:#cbc4be;border-radius:8px}
+.number-order-switch{position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(2,1fr);width:172px;height:32px;flex:none;padding:3px;background:#c9c9c9;border-radius:8px}
 .number-order-switch::before{content:'';position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:5px;background:#fff;transform:translateX(0);transition:transform 260ms cubic-bezier(.22,.7,.2,1);z-index:-1}
 .number-order-switch[data-order=position]::before{transform:translateX(100%)}
 .number-order-switch button{font-size:11px;padding:0;min-height:0;background:none;border:0;color:#22282d;white-space:nowrap;font-weight:400}.number-order-switch button[aria-pressed=true]{font-weight:600}
