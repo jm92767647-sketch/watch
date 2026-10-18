@@ -56,3 +56,5 @@ body[data-presentation=free] #catalog-pane{display:none}
 }
 @media(max-width:360px){.number-order-switch{width:118px}#number-dialog .number-heading{gap:8px}}
 @media(prefers-reduced-motion:reduce){.view-switch::before,.number-order-switch::before{transition:none}}
+
+.catalog-caption .catalog-minimum{color:#32674d}.catalog-caption .catalog-limited{color:#80632c}
