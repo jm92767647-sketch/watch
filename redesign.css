@@ -307,3 +307,15 @@ body[data-presentation=free] > header nav button[aria-pressed=true]{color:var(--
  body[data-presentation=free] > header nav{gap:14px;order:9;width:100%;margin-left:0}
  body[data-presentation=free] > header nav button{font-size:11.5px}
 }
+
+/* ---------- the bar keeps its paper in roam, and modes cross-fade ---------- */
+body[data-menu-open] > header,body[data-presentation=free] > header{background:var(--paper);border-bottom:1px solid var(--line)}
+.mode-veil{position:fixed;inset:0;z-index:8;background:var(--paper);opacity:0;pointer-events:none;transition:opacity .28s cubic-bezier(.4,0,.2,1)}
+.mode-veil[data-on]{opacity:1}
+main[data-mode-leaving]{transition:opacity .26s ease-in,transform .26s ease-in;opacity:.45;transform:scale(.994)}
+main[data-mode-entering]{animation:mode-rise .64s cubic-bezier(.22,.7,.2,1) both}
+@keyframes mode-rise{0%{opacity:0;transform:translateY(12px) scale(.994)}100%{opacity:1;transform:none}}
+header .view-switch button{transition:color .25s ease,background .25s ease}
+@media(prefers-reduced-motion:reduce){
+ .mode-veil,main[data-mode-leaving],main[data-mode-entering]{transition:none;animation:none}
+}

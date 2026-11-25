@@ -196,6 +196,29 @@
    }catch(e){}
   });
  }));
- const freeButton=document.querySelector('[data-presentation-button="free"]');
- if(freeButton)freeButton.addEventListener('click',()=>{requestAnimationFrame(()=>requestAnimationFrame(roamFocus))});
+ /* ---- list and roam hand over behind a paper veil ---- */
+ const main=document.querySelector('main');
+ const stillMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+ function handover(swap,done){
+  if(stillMotion()||!main){swap();done&&done();return}
+  const veil=document.createElement('div');veil.className='mode-veil';document.body.append(veil);
+  requestAnimationFrame(()=>{veil.dataset.on='1';main.dataset.modeLeaving='1'});
+  setTimeout(()=>{
+   swap();
+   main.removeAttribute('data-mode-leaving');
+   main.dataset.modeEntering='1';
+   requestAnimationFrame(()=>{veil.removeAttribute('data-on');done&&done()});
+   setTimeout(()=>{main.removeAttribute('data-mode-entering');veil.remove()},660);
+  },280);
+ }
+ document.querySelectorAll('[data-presentation-button]').forEach(button=>{
+  const original=button.onclick;
+  if(!original)return;
+  button.onclick=null;
+  button.addEventListener('click',event=>{
+   if(button.getAttribute('aria-pressed')==='true')return;
+   const roam=button.dataset.presentationButton==='free';
+   handover(()=>original.call(button,event),roam?()=>requestAnimationFrame(()=>requestAnimationFrame(roamFocus)):null);
+  });
+ });
 })();
