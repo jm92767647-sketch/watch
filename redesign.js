@@ -21,9 +21,9 @@
 
  /* ---- entry cards ---- */
  const CARDS={
-  'By Brand':{art:'previews/dial-99.webp',ko:'브랜드별',note:()=>`${brandCounts().size} MAISONS`},
-  'By Style':{art:'previews/dial-100.webp',ko:'스타일별',note:()=>`${D.groups.style.length} STYLES`},
-  'By Color':{art:'previews/dial-102.webp',ko:'색상별',note:()=>`${D.groups.color.length} TONES`}
+  'By Brand':{art:'previews/dial-2.webp',ko:'브랜드별',note:()=>`${brandCounts().size} MAISONS`},
+  'By Style':{art:'previews/dial-116.webp',ko:'스타일별',note:()=>`${D.groups.style.length} STYLES`},
+  'By Color':{art:'previews/dial-112.webp',ko:'색상별',note:()=>`${D.groups.color.length} TONES`}
  };
  function decorate(){
   if(!entry)return;
@@ -31,9 +31,7 @@
    const head=document.createElement('div');head.className='entry-heading';head.setAttribute('aria-hidden','true');
    head.innerHTML='<span>Elect</span><em>timepieces.</em>';
    const rule=document.createElement('div');rule.className='entry-rule';rule.setAttribute('aria-hidden','true');
-   const foot=document.createElement('div');foot.className='entry-foot';foot.setAttribute('aria-hidden','true');
-   foot.innerHTML=`<span>2026 EDITION</span><span>01 — 0${entry.querySelectorAll('.collection-choice').length||3}</span>`;
-   entry.append(head,rule,foot);
+   entry.append(head,rule);
   }
   entry.querySelectorAll('.collection-choice').forEach((button,i)=>{
    if(button.dataset.carded)return;
@@ -86,7 +84,7 @@
  const openButton=document.createElement('button');
  openButton.id='index-open';openButton.type='button';
  openButton.setAttribute('aria-haspopup','dialog');
- openButton.innerHTML='<span class="ix-half">BRAND<i></i></span><span class="ix-half"><span class="ix-full">NUMBER</span><span class="ix-abbr">\u2116</span> <sup>98</sup></span>';
+ openButton.setAttribute('aria-label','브랜드 계급도와 컬렉션 통계');openButton.innerHTML='<span class="ix-dots" aria-hidden="true">'+'<i></i>'.repeat(9)+'</span>';
  header.append(openButton);
 
  const dialog=document.createElement('dialog');
@@ -99,7 +97,7 @@
   const styleEntries=D.groups.style.map(g=>[g.label,g.ids.length]).sort((a,b)=>b[1]-a[1]);
   const colorEntries=D.groups.color.map(g=>[g.label,g.ids.length]).sort((a,b)=>b[1]-a[1]);
   const total=Object.keys(W).length;
-  openButton.innerHTML=`<span class="ix-half">BRAND<i></i></span><span class="ix-half"><span class="ix-full">NUMBER</span><span class="ix-abbr">\u2116</span> <sup>${total}</sup></span>`;
+
   dialog.innerHTML=`<button type="button" class="ix-close" aria-label="닫기">✕</button><div class="ix-wrap">
    <div class="ix-head">
     <div><div class="ix-eyebrow">BRAND HIERARCHY × COLLECTION NUMBERS</div><h2 id="index-title">Index <em>&amp; Numbers</em></h2></div>
@@ -131,6 +129,12 @@
   if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();
  });
 
+
+ const REPRESENTATIVE={
+  brand:{'폴 쥬른':112,'드 베튠':55,'랑앤하이네':21,'로랑 페리에':90,'파텍 필립':100,'바쉐론 콘스탄틴':72,'오데마 피게':75,'랑에 운트 죄네':47,'브레게':8,'예거 르쿨트르':18,'위블로':82,'IWC':59,'제니스':5,'롤렉스':115,'까르띠에':116,'오메가':119,'해밀턴':9},
+  style:{'MINIMAL':12,'COLORFUL':89,'MILITARY (+MEAN)':9,'ELEGANT BRACELET':14,'MASCULINE':107,'ARTISTIC BEAUTY':86,'NOBLE CLASSIC':21,'CLASSIC CALENDAR':105,'NEO VINTAGE COMPLICATION':38,'MECHANICAL BEAUTY':95},
+  color:{'골드 · 화이트 다이얼':11,'실버 · 화이트 다이얼':4,'실버 · 블랙 다이얼':68,'실버 · 블루 다이얼':112,'실버 · 특이 색상 다이얼':60,'스켈레톤 다이얼':95}
+ };
  /* ---- directory rows: thumbnail, count, arrow ---- */
  const pane=document.querySelector('#catalog-pane');
  function decorateDirectory(){
@@ -144,7 +148,8 @@
    const ids=byLabel.get(entry.dataset.group);
    if(!ids||!ids.length)return;
    entry.dataset.rowed='true';
-   const art=W[ids[0]]?.dialArt;
+   const pick=REPRESENTATIVE[pane.dataset.mode]?.[entry.dataset.group];
+   const art=W[ids.includes(pick)?pick:ids[0]]?.dialArt;
    if(art){
     const img=document.createElement('img');
     img.className='cat-thumb';img.src=art.previewPath||art.path;img.alt='';img.loading='lazy';img.decoding='async';
