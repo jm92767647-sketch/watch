@@ -319,3 +319,13 @@ header .view-switch button{transition:color .25s ease,background .25s ease}
 @media(prefers-reduced-motion:reduce){
  .mode-veil,main[data-mode-leaving],main[data-mode-entering]{transition:none;animation:none}
 }
+
+/* ---------- entry cards: wording first, photo beneath ---------- */
+@media(min-width:761px){
+ body[data-entry-home=true] #collection-entry .collection-choice{justify-content:flex-start}
+ body[data-entry-home=true] .entry-card-no{order:1}
+ body[data-entry-home=true] .entry-card-body{order:2}
+ body[data-entry-home=true] .entry-card-art{order:3;flex:1;min-height:0;align-self:stretch;width:100%;max-width:100%;margin:clamp(10px,2vh,22px) 0 0;object-position:center bottom}
+ body[data-entry-home=true] .entry-card-body{margin-top:clamp(10px,1.8vh,18px)}
+ body[data-entry-home=true] .entry-card-meta{margin-top:clamp(8px,1.2vh,12px);padding-top:clamp(8px,1.2vh,12px)}
+}
