@@ -184,6 +184,18 @@
    target.z=pick;centerLocked(target);bound(target);Object.assign(camera,target);geometryKey='';wake();
   }catch(e){}
  }
+
+ /* ---- switching classification inside roam returns to the overview ---- */
+ document.querySelectorAll('header nav [data-mode]').forEach(button=>button.addEventListener('click',()=>{
+  if(document.body.dataset.presentation!=='free')return;
+  requestAnimationFrame(()=>{
+   try{
+    lockedId=null;
+    target.z=overviewZoom();target.x=0;target.y=0;bound(target);
+    Object.assign(camera,target);geometryKey='';wake();
+   }catch(e){}
+  });
+ }));
  const freeButton=document.querySelector('[data-presentation-button="free"]');
  if(freeButton)freeButton.addEventListener('click',()=>{requestAnimationFrame(()=>requestAnimationFrame(roamFocus))});
 })();

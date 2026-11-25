@@ -296,3 +296,14 @@ body[data-presentation=list] #catalog-pane .catalog-group-head{background:var(--
 }
 #index-open .ix-dots{grid-template-columns:minmax(0,1fr);grid-template-rows:none}
 @media(max-width:760px){#index-open .ix-dots{grid-template-columns:minmax(0,1fr);grid-template-rows:none}}
+
+/* ---------- roam keeps the classification tabs ---------- */
+body[data-presentation=free] > header nav{display:flex!important;order:3;gap:22px;margin-left:4px}
+body[data-presentation=free] > header nav button{position:relative;min-height:0;padding:4px 0;border:0;border-radius:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;font-size:12.5px;letter-spacing:.02em;color:#9a9188!important;opacity:1!important}
+body[data-presentation=free] > header nav button::before{display:none}
+body[data-presentation=free] > header nav button:hover{color:var(--ink)!important;background:none}
+body[data-presentation=free] > header nav button[aria-pressed=true]{color:var(--ink)!important;border-bottom:1px solid var(--gold)}
+@media(max-width:760px){
+ body[data-presentation=free] > header nav{gap:14px;order:9;width:100%;margin-left:0}
+ body[data-presentation=free] > header nav button{font-size:11.5px}
+}
