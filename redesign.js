@@ -84,7 +84,7 @@
  const openButton=document.createElement('button');
  openButton.id='index-open';openButton.type='button';
  openButton.setAttribute('aria-haspopup','dialog');
- openButton.setAttribute('aria-label','브랜드 계급도와 컬렉션 통계');openButton.innerHTML='<span class="ix-dots" aria-hidden="true">'+'<i></i>'.repeat(9)+'</span>';
+ openButton.setAttribute('aria-label','브랜드 계급도와 컬렉션 통계');openButton.innerHTML='<span class="ix-dots" aria-hidden="true">'+'<i></i>'.repeat(3)+'</span>';
  header.append(openButton);
 
  const dialog=document.createElement('dialog');

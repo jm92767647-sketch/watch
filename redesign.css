@@ -282,3 +282,17 @@ body[data-presentation=list] #catalog-pane .catalog-group-head{background:var(--
  body[data-entry-home=true] #collection-entry .collection-choice{margin:0;position:relative}
  body[data-entry-home=true] .entry-card-art{flex:0 0 104px;max-width:104px;max-height:84%;align-self:center}
 }
+
+/* index mark: three rules, no frame */
+#index-open{border:0;background:none;box-shadow:none;width:auto;height:auto;min-height:0;padding:8px 4px;border-radius:0;display:grid;place-items:center}
+#index-open:hover{background:none;border:0}
+#index-open .ix-dots{display:grid;grid-auto-rows:1.5px;gap:4.5px;width:20px}
+#index-open .ix-dots i{display:block;width:100%;height:1.5px;background:#6e6459;border-radius:0}
+#index-open:hover .ix-dots i{background:var(--gold)}
+@media(max-width:760px){
+ #index-open{width:auto;height:auto;padding:8px 2px}
+ #index-open .ix-dots{width:18px;gap:4px;grid-auto-rows:1.5px}
+ #index-open .ix-dots i{width:100%;height:1.5px}
+}
+#index-open .ix-dots{grid-template-columns:minmax(0,1fr);grid-template-rows:none}
+@media(max-width:760px){#index-open .ix-dots{grid-template-columns:minmax(0,1fr);grid-template-rows:none}}
