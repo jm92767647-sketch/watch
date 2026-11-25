@@ -21,9 +21,9 @@
 
  /* ---- entry cards ---- */
  const CARDS={
-  'By Brand':{art:'previews/dial-2.webp',ko:'브랜드별',note:()=>`${brandCounts().size} MAISONS`},
-  'By Style':{art:'previews/dial-116.webp',ko:'스타일별',note:()=>`${D.groups.style.length} STYLES`},
-  'By Color':{art:'previews/dial-112.webp',ko:'색상별',note:()=>`${D.groups.color.length} TONES`}
+  'By Brand':{art:'previews/full-2.webp',ko:'브랜드별',note:()=>`${brandCounts().size} MAISONS`},
+  'By Style':{art:'previews/full-116.webp',ko:'스타일별',note:()=>`${D.groups.style.length} STYLES`},
+  'By Color':{art:'previews/full-88.webp',ko:'색상별',note:()=>`${D.groups.color.length} TONES`}
  };
  function decorate(){
   if(!entry)return;
@@ -148,13 +148,6 @@
    const ids=byLabel.get(entry.dataset.group);
    if(!ids||!ids.length)return;
    entry.dataset.rowed='true';
-   const pick=REPRESENTATIVE[pane.dataset.mode]?.[entry.dataset.group];
-   const art=W[ids.includes(pick)?pick:ids[0]]?.dialArt;
-   if(art){
-    const img=document.createElement('img');
-    img.className='cat-thumb';img.src=art.previewPath||art.path;img.alt='';img.loading='lazy';img.decoding='async';
-    entry.prepend(img);
-   }
    const count=document.createElement('span');count.className='cat-count';count.textContent=String(ids.length).padStart(2,'0');
    const arrow=document.createElement('span');arrow.className='cat-arrow';arrow.setAttribute('aria-hidden','true');arrow.textContent='\u2192';
    entry.append(count,arrow);
