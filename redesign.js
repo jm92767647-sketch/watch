@@ -21,15 +21,15 @@
 
  /* ---- entry cards ---- */
  const CARDS={
-  'By Brand':{art:'previews/dial-2.webp',ko:'브랜드별',note:()=>`${brandCounts().size} MAISONS`},
-  'By Style':{art:'previews/dial-5.webp',ko:'스타일별',note:()=>`${D.groups.style.length} STYLES`},
-  'By Color':{art:'previews/dial-112.webp',ko:'색상별',note:()=>`${D.groups.color.length} TONES`}
+  'By Brand':{art:'previews/dial-99.webp',ko:'브랜드별',note:()=>`${brandCounts().size} MAISONS`},
+  'By Style':{art:'previews/dial-100.webp',ko:'스타일별',note:()=>`${D.groups.style.length} STYLES`},
+  'By Color':{art:'previews/dial-102.webp',ko:'색상별',note:()=>`${D.groups.color.length} TONES`}
  };
  function decorate(){
   if(!entry)return;
   if(!entry.querySelector('.entry-heading')){
    const head=document.createElement('div');head.className='entry-heading';head.setAttribute('aria-hidden','true');
-   head.innerHTML='<span>Exquisite</span><em>timepieces.</em>';
+   head.innerHTML='<span>Elect</span><em>timepieces.</em>';
    const rule=document.createElement('div');rule.className='entry-rule';rule.setAttribute('aria-hidden','true');
    const foot=document.createElement('div');foot.className='entry-foot';foot.setAttribute('aria-hidden','true');
    foot.innerHTML=`<span>2026 EDITION</span><span>01 — 0${entry.querySelectorAll('.collection-choice').length||3}</span>`;
@@ -86,7 +86,7 @@
  const openButton=document.createElement('button');
  openButton.id='index-open';openButton.type='button';
  openButton.setAttribute('aria-haspopup','dialog');
- openButton.innerHTML='INDEX <sup>98</sup>';
+ openButton.innerHTML='<span class="ix-half">BRAND<i></i></span><span class="ix-half"><span class="ix-full">NUMBER</span><span class="ix-abbr">\u2116</span> <sup>98</sup></span>';
  header.append(openButton);
 
  const dialog=document.createElement('dialog');
@@ -99,7 +99,7 @@
   const styleEntries=D.groups.style.map(g=>[g.label,g.ids.length]).sort((a,b)=>b[1]-a[1]);
   const colorEntries=D.groups.color.map(g=>[g.label,g.ids.length]).sort((a,b)=>b[1]-a[1]);
   const total=Object.keys(W).length;
-  openButton.innerHTML=`INDEX <sup>${total}</sup>`;
+  openButton.innerHTML=`<span class="ix-half">BRAND<i></i></span><span class="ix-half"><span class="ix-full">NUMBER</span><span class="ix-abbr">\u2116</span> <sup>${total}</sup></span>`;
   dialog.innerHTML=`<button type="button" class="ix-close" aria-label="닫기">✕</button><div class="ix-wrap">
    <div class="ix-head">
     <div><div class="ix-eyebrow">BRAND HIERARCHY × COLLECTION NUMBERS</div><h2 id="index-title">Index <em>&amp; Numbers</em></h2></div>
@@ -130,4 +130,55 @@
   const r=dialog.getBoundingClientRect();
   if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();
  });
+
+ /* ---- directory rows: thumbnail, count, arrow ---- */
+ const pane=document.querySelector('#catalog-pane');
+ function decorateDirectory(){
+  const directory=pane&&pane.querySelector('.catalog-directory');
+  if(!directory)return;
+  let groups=[];
+  try{groups=catalogGroups();}catch(e){return}
+  const byLabel=new Map(groups.map(g=>[g.label,g.ids]));
+  directory.querySelectorAll('.catalog-entry').forEach(entry=>{
+   if(entry.dataset.rowed)return;
+   const ids=byLabel.get(entry.dataset.group);
+   if(!ids||!ids.length)return;
+   entry.dataset.rowed='true';
+   const art=W[ids[0]]?.dialArt;
+   if(art){
+    const img=document.createElement('img');
+    img.className='cat-thumb';img.src=art.previewPath||art.path;img.alt='';img.loading='lazy';img.decoding='async';
+    entry.prepend(img);
+   }
+   const count=document.createElement('span');count.className='cat-count';count.textContent=String(ids.length).padStart(2,'0');
+   const arrow=document.createElement('span');arrow.className='cat-arrow';arrow.setAttribute('aria-hidden','true');arrow.textContent='\u2192';
+   entry.append(count,arrow);
+  });
+ }
+ if(pane){decorateDirectory();new MutationObserver(decorateDirectory).observe(pane,{childList:true,subtree:true});}
+
+ /* ---- roam opens on the Nautilus 5712, three across on desktop, one on phones ---- */
+ const ROAM_ID=100;
+ function roamFocus(){
+  try{
+   if(document.body.dataset.presentation!=='free'||!items.length)return;
+   const item=items.find(i=>i.id===ROAM_ID);
+   if(!item)return;
+   lockedId=ROAM_ID;
+   const row=items.filter(i=>Math.abs((i.cy??0)-(item.cy??0))<1).sort((a,b)=>a.cx-b.cx);
+   const near=row[row.indexOf(item)+1]||row[row.indexOf(item)-1];
+   const across=viewWidth<=760?1:3;
+   const low=minZoom(),high=maxZoom;
+   let pick=low;
+   for(let step=0;step<=160;step++){
+    const z=low*Math.pow(high/low,step/160);
+    const pitch=near?Math.abs(position(near,z).x-position(item,z).x)*xScale(z):0;
+    pick=z;
+    if(pitch>=viewWidth/across)break;
+   }
+   target.z=pick;centerLocked(target);bound(target);Object.assign(camera,target);geometryKey='';wake();
+  }catch(e){}
+ }
+ const freeButton=document.querySelector('[data-presentation-button="free"]');
+ if(freeButton)freeButton.addEventListener('click',()=>{requestAnimationFrame(()=>requestAnimationFrame(roamFocus))});
 })();
