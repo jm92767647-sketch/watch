@@ -26,7 +26,7 @@ header .filters button:hover{border-color:#cdc2b0;background:var(--paper-2)}
 /* LIST / ROAM */
 header .view-switch{width:132px;height:32px;background:#e7e1d6;border:1px solid var(--line);border-radius:999px}
 header .view-switch button{font-size:10.5px;letter-spacing:.16em;color:#8c8276!important;opacity:1!important;border-radius:999px;background:none;box-shadow:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none}
-header .view-switch button::before{display:none}
+header .view-switch button::before,header .view-switch::before{display:none!important}
 header .view-switch button[aria-pressed=true]{color:#fdfbf6!important;background:var(--ink)}
 
 /* INDEX button */
