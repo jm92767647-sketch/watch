@@ -21,9 +21,9 @@
 
  /* ---- entry cards ---- */
  const CARDS={
-  'By Brand':{art:'previews/full-2.webp',phone:'previews/entry-2.webp',ko:'브랜드별',note:()=>`${brandCounts().size} MAISONS`},
-  'By Style':{art:'previews/full-116.webp',phone:'previews/entry-116.webp',ko:'스타일별',note:()=>`${D.groups.style.length} STYLES`},
-  'By Color':{art:'previews/full-88.webp',phone:'previews/entry-88.webp',ko:'색상별',note:()=>`${D.groups.color.length} TONES`}
+  'By Brand':{art:'previews/full-2.webp',phone:'previews/entry2-2.webp',ko:'브랜드별',note:()=>`${brandCounts().size} MAISONS`},
+  'By Style':{art:'previews/full-116.webp',phone:'previews/entry2-116.webp',ko:'스타일별',note:()=>`${D.groups.style.length} STYLES`},
+  'By Color':{art:'previews/full-88.webp',phone:'previews/entry2-88.webp',ko:'색상별',note:()=>`${D.groups.color.length} TONES`}
  };
  function decorate(){
   if(!entry)return;
