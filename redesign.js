@@ -21,9 +21,9 @@
 
  /* ---- entry cards ---- */
  const CARDS={
-  'By Brand':{art:'previews/full-2.webp',ko:'브랜드별',note:()=>`${brandCounts().size} MAISONS`},
-  'By Style':{art:'previews/full-116.webp',ko:'스타일별',note:()=>`${D.groups.style.length} STYLES`},
-  'By Color':{art:'previews/full-88.webp',ko:'색상별',note:()=>`${D.groups.color.length} TONES`}
+  'By Brand':{art:'previews/full-2.webp',phone:'previews/entry-2.webp',ko:'브랜드별',note:()=>`${brandCounts().size} MAISONS`},
+  'By Style':{art:'previews/full-116.webp',phone:'previews/entry-116.webp',ko:'스타일별',note:()=>`${D.groups.style.length} STYLES`},
+  'By Color':{art:'previews/full-88.webp',phone:'previews/entry-88.webp',ko:'색상별',note:()=>`${D.groups.color.length} TONES`}
  };
  function decorate(){
   if(!entry)return;
@@ -40,7 +40,7 @@
    if(!meta)return;
    button.dataset.carded='true';
    const no=document.createElement('span');no.className='entry-card-no';no.textContent=String(i+1).padStart(2,'0');
-   const art=document.createElement('img');art.className='entry-card-art';art.src=meta.art;art.alt='';art.loading='lazy';art.decoding='async';
+   const art=document.createElement('img');art.className='entry-card-art';art.dataset.wide=meta.art;art.dataset.phone=meta.phone||meta.art;art.src=meta.art;art.alt='';art.loading='lazy';art.decoding='async';
    const body2=document.createElement('span');body2.className='entry-card-body';
    const foot=document.createElement('span');foot.className='entry-card-meta';
    foot.innerHTML=`<span>${meta.ko}</span><b>${meta.note()}</b>`;
@@ -50,7 +50,9 @@
    button.append(body2);
   });
  }
- if(entry){decorate();new MutationObserver(decorate).observe(entry,{childList:true});}
+ const narrow=matchMedia('(max-width:760px)');
+ function pickArt(){if(!entry)return;entry.querySelectorAll('.entry-card-art').forEach(img=>{const want=narrow.matches?img.dataset.phone:img.dataset.wide;if(want&&img.getAttribute('src')!==want)img.src=want;});}
+ if(entry){decorate();pickArt();new MutationObserver(()=>{decorate();pickArt()}).observe(entry,{childList:true});narrow.addEventListener('change',pickArt);}
 
  /* ---- data for the index panel ---- */
  function brandCounts(){
