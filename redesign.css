@@ -280,7 +280,8 @@ body[data-presentation=list] #catalog-pane .catalog-group-head{background:var(--
   align-content:stretch!important}
  body[data-entry-home=true] #collection-entry > .collection-choice:nth-child(n+2){top:auto}
  body[data-entry-home=true] #collection-entry .collection-choice{margin:0;position:relative}
- body[data-entry-home=true] .entry-card-art{flex:0 0 46%;width:46%;height:calc(100% + 28px);max-height:none;max-width:46%;margin:-14px 0;align-self:center;object-fit:contain;object-position:center}
+ body[data-entry-home=true] #collection-entry .collection-choice{padding-right:calc(44% + 26px)!important}
+ body[data-entry-home=true] .entry-card-art{position:absolute;top:50%;bottom:auto;right:14px;width:44%;height:calc(100% - 20px)!important;max-height:none;max-width:none;margin:0!important;flex:none;transform:translateY(-50%);object-fit:contain;object-position:center}
 }
 
 /* index mark: three rules, no frame */
